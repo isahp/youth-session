@@ -32,7 +32,14 @@ shinyUI(fluidPage(
   sidebarLayout(
     sidebarPanel(
       h2("Inputs"),
-      fileInput("theFile", label = "Excel xlsx Input File", accept = c('.xlsx'))
+      tabsetPanel(
+        tabPanel("Excel",
+                 fileInput("theFile", label = "Excel xlsx Input File", accept = c('.xlsx'))
+        ),
+        tabPanel("Survey",
+                 textInput("gformUrl", label="URL of google form spreadsheet"),
+                 actionButton("gformUrlGo", label = "Update"))
+      )
     ),
 
     # Show a plot of the generated distribution

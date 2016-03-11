@@ -7,7 +7,9 @@
 
 library(shiny)
 library(plotly)
+library(gsheet)
 source("basics.R")
+source('parse_google_form.R')
 
 shinyServer(function(input, output, clientData, session) {
 
@@ -21,6 +23,10 @@ shinyServer(function(input, output, clientData, session) {
   })
   
   output$overallPlot = renderPlotly({
+    #These aren't used, but allow us to react to things changing on file IO
+    a = input$oneUser
+    b = input$headToHeadUsers
+    c = input$groups
     p <- plot_ly(type="bar",
                  x = All_Alts,
                  y = Overall_Priorities)    
@@ -70,11 +76,34 @@ shinyServer(function(input, output, clientData, session) {
     uploadedFile = info$datapath
     file.copy(uploadedFile, Input_Votes_File, overwrite = TRUE)
     update_globals()
-    updateSelectInput(session = session,
-                      inputId = "oneUser",
-                      choices = Voters)
-    updateSelectInput(session = session,
-                      inputId = "headToHeadUsers",
-                      choices = Voters)
+    update_uis(input, session)
+    #return(TRUE)    
+  })
+  gformUrlFx = eventReactive(input$gformUrlGo, {
+    url = input$gformUrl
+    if (is.null(url) || url == "" )
+      return(TRUE)
+    print("In gFormURLFX?")
+    google_df = read.csv(text=gsheet::gsheet2text(url),check.names = FALSE, 
+                         strip.white = FALSE, stringsAsFactors = FALSE)
+    glset_googleform_df(google_df)
+    update_uis(input, session)
+    #return(TRUE)
+  })
+  observe({
+    gformUrlFx()
   })
 })
+
+update_uis <- function(input, session) {
+  updateSelectInput(session = session,
+                    inputId = "oneUser",
+                    choices = Voters)
+  updateSelectInput(session = session,
+                    inputId = "headToHeadUsers",
+                    choices = Voters)
+  updateSelectInput(session = session,
+                    inputId = "groups",
+                    choices = names(Voter_Group_Participants))
+  #print(names(Voter_Group_Participants))
+}

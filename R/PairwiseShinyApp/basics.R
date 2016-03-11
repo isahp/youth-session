@@ -1,5 +1,6 @@
 library(openxlsx)
 source("common-fxs.R")
+source("set-globals.R")
 # Initial Inputs
 Input_Votes_File = "votes.xlsx"
 #Voter spreadsheets will be created initially
@@ -127,18 +128,19 @@ get_group_participants <- function(voter_demo_df) {
   return(rval)
 }
 
+
 #Initialize some useful variables
 update_globals <- function() {
   assign("Vote_Dataframes", get_voter_spreadsheets(), envir = .GlobalEnv)
-  assign("All_Alts", get_allnames_from_dataframes(Vote_Dataframes), envir = .GlobalEnv)
-  assign("Vote_Pairwises", get_allpairwise_from_votes(Vote_Dataframes, All_Alts), envir = .GlobalEnv)
-  assign("Vote_Priorities", lapply(Vote_Pairwises, FUN=function(x) eigen_largest(x)), envir = .GlobalEnv)
-  assign("Voters", names(Vote_Priorities), envir = .GlobalEnv)
-  assign("Voter_Demographics", get_demographic_table(), envir = .GlobalEnv)
-  assign("Voter_Group_Participants", get_group_participants(voter_demo_df = Voter_Demographics), envir = .GlobalEnv)
-  assign("Group_Pairwises", lapply(Voter_Group_Participants, FUN = function(x) Vote_Pairwises[x]), envir = .GlobalEnv)
-  assign("Group_Priorities", lapply(Group_Pairwises, FUN = function(x) eigen_largest(x)), envir = .GlobalEnv)
-  assign("Overall_Priorities", eigen_largest(Vote_Pairwises), envir = .GlobalEnv)
+  glset_all_alts(get_allnames_from_dataframes(Vote_Dataframes))
+  glset_vote_pairwises(get_allpairwise_from_votes(Vote_Dataframes, All_Alts))
+  glset_vote_priorities(lapply(Vote_Pairwises, FUN=function(x) eigen_largest(x)))
+  glset_voters(names(Vote_Priorities))
+  glset_voter_demographics(get_demographic_table())
+  glset_voter_group_participants(get_group_participants(Voter_Demographics))
+  glset_group_pairwises(lapply(Voter_Group_Participants, FUN = function(x) Vote_Pairwises[x]))
+  glset_group_priorities(lapply(Group_Pairwises, FUN = function(x) eigen_largest(x)))
+  glset_overall_priorities(eigen_largest(Vote_Pairwises))
   print(Group_Priorities)
   #print(Voter_Group_Participants)
 }
