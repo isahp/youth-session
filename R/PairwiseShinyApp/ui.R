@@ -1,0 +1,57 @@
+
+# This is the user-interface definition of a Shiny web application.
+# You can find out more about building applications with Shiny here:
+#
+# http://shiny.rstudio.com
+#
+
+library(shiny)
+library(plotly)
+source("basics.R")
+get_init_from_list <- function(alist, single = FALSE) {
+  init = NULL
+  if (single) {
+    if (length(alist) == 0)
+      return(init)
+    else
+      return(alist[1])
+  }
+  if (length(alist) >= 2) {
+    init = alist[c(1,2)]
+  } else if (length(alist) == 1) {
+    init = alist[c(1)]
+  }
+  return(init)
+}
+shinyUI(fluidPage(
+
+  # Application title
+  titlePanel("Group Pairwise Analysis"),
+
+  # Sidebar with a slider input for number of bins
+  sidebarLayout(
+    sidebarPanel(
+      h2("Inputs"),
+      fileInput("theFile", label = "Excel xlsx Input File", accept = c('.xlsx'))
+    ),
+
+    # Show a plot of the generated distribution
+    mainPanel(
+      tabsetPanel(
+        tabPanel("Overall",
+                 plotlyOutput("overallPlot")
+        ),
+        tabPanel("Individuals", 
+                 selectInput("oneUser", label="Choose voter", choices = Voters), 
+                 plotlyOutput("oneUserPlot")
+                 ),
+        tabPanel("Head-to-Head",
+                 selectInput("headToHeadUsers", "Select Voters", choices = Voters, multiple = TRUE, selectize = TRUE, selected = get_init_from_list(Voters)),
+                 plotlyOutput("headToHeadPlot")),
+        tabPanel("Groups", 
+                 selectInput("groups", "Select Groups", choices = names(Voter_Group_Participants), multiple = TRUE, selectize = TRUE, selected = get_init_from_list(names(Voter_Group_Participants))),
+                 plotlyOutput("groupsPlot"))
+      )
+    )
+  )
+))
