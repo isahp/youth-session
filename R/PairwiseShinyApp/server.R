@@ -10,9 +10,11 @@ library(plotly)
 library(gsheet)
 source("basics.R")
 source('parse_google_form.R')
+# Initial Inputs
+Input_Votes_File = "votes.xlsx"
 
 shinyServer(function(input, output, clientData, session) {
-
+  update_globals(Input_Votes_File)
   output$oneUserPlot = renderPlotly({
      p <- plot_ly(
        x = All_Alts,
@@ -38,9 +40,11 @@ shinyServer(function(input, output, clientData, session) {
       return()
     }
     p <- plot_ly(type="bar")
+    print('Trying to update users plot')
+    print(groups)
     for(user in groups) {
       values = Group_Priorities[[user]]
-      #print(paste("Working on user ", user))
+      print(paste("Working on user ", user))
       p <- add_trace(p,
                      x = All_Alts,
                      y = values,
@@ -48,8 +52,10 @@ shinyServer(function(input, output, clientData, session) {
                      evaluate = TRUE
       )
     }
-    p
-    
+    if (length(groups) > 0)
+      p
+    else
+      "No groups"
   })
   output$headToHeadPlot = renderPlotly({
     headToHeads = input$headToHeadUsers
@@ -74,9 +80,10 @@ shinyServer(function(input, output, clientData, session) {
     if (is.null(info))
       return(NULL)
     uploadedFile = info$datapath
-    file.copy(uploadedFile, Input_Votes_File, overwrite = TRUE)
-    update_globals()
+    update_globals(uploadedFile)
+    file.remove(uploadedFile)
     update_uis(input, session)
+    session$sendCustomMessage(type = "resetFileInputHandler", "theFile")
     #return(TRUE)    
   })
   gformUrlFx = eventReactive(input$gformUrlGo, {

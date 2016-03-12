@@ -8,6 +8,7 @@
 library(shiny)
 library(plotly)
 source("basics.R")
+
 get_init_from_list <- function(alist, single = FALSE) {
   init = NULL
   if (single) {
@@ -24,7 +25,16 @@ get_init_from_list <- function(alist, single = FALSE) {
   return(init)
 }
 shinyUI(fluidPage(
-
+  tags$script('
+    Shiny.addCustomMessageHandler("resetFileInputHandler", function(x) {      
+              var id = "#" + x + "_progress";
+              var fileControl = $("#"+x);
+              fileControl.replaceWith( fileControl = fileControl.clone( true ) );
+              var idBar = id + " .bar";
+              $(id).css("visibility", "hidden");
+              $(idBar).css("width", "0%");
+              });
+  '),
   # Application title
   titlePanel("Group Pairwise Analysis"),
 
