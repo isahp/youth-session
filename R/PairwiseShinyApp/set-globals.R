@@ -1,5 +1,7 @@
 Better_Value = 3.0
 Much_Better_Value = 9.0
+Input_Votes_File = "votes.xlsx"
+
 
 glset_better_value <- function(newVal) {
   assign("Better_Value", newVal, envir = .GlobalEnv)  

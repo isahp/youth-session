@@ -9,6 +9,7 @@ library(shiny)
 library(plotly)
 source("basics.R")
 
+update_globals("votes.xlsx")
 get_init_from_list <- function(alist, single = FALSE) {
   init = NULL
   if (single) {

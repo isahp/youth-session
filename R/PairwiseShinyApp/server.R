@@ -11,7 +11,6 @@ library(gsheet)
 source("basics.R")
 source('parse_google_form.R')
 # Initial Inputs
-Input_Votes_File = "votes.xlsx"
 list_to_string <- function(obj, listname) {
   if (is.null(names(obj))) {
     paste(listname, "[[", seq_along(obj), "]] = ", obj,
