@@ -15,7 +15,7 @@ Voting_String_Values = c(">>" = Much_Better_value,
                          ">"= Better_Value, 
                          "E"=1, "e"=1, 
                          "<"=1./Better_Value, 
-                         "<<"=1./Much_Better_value)
+                         "<<"=1./Much_Better_Value)
 ################################################
 ####Start defining some useful functions.    ###
 ################################################
