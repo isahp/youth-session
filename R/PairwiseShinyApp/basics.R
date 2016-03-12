@@ -11,7 +11,7 @@ Voter_Group_Participants = list()
 Group_Pairwises = list()
 Overall_Priorities = list()
 #The Voting Table
-Voting_String_Values = c(">>" = Much_Better_value, 
+Voting_String_Values = c(">>" = Much_Better_Value, 
                          ">"= Better_Value, 
                          "E"=1, "e"=1, 
                          "<"=1./Better_Value, 
