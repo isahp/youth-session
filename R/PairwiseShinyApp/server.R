@@ -12,8 +12,18 @@ source("basics.R")
 source('parse_google_form.R')
 # Initial Inputs
 Input_Votes_File = "votes.xlsx"
+list_to_string <- function(obj, listname) {
+  if (is.null(names(obj))) {
+    paste(listname, "[[", seq_along(obj), "]] = ", obj,
+          sep = "", collapse = "\n")
+  } else {
+    paste(listname, "$", names(obj), " = ", obj,
+          sep = "", collapse = "\n")
+  }
+}
 
-shinyServer(function(input, output, clientData, session) {
+Query_Form_URL = ""
+shinyServer(function(input, output, cD, session) {
   update_globals(Input_Votes_File)
   output$oneUserPlot = renderPlotly({
      p <- plot_ly(
@@ -25,6 +35,7 @@ shinyServer(function(input, output, clientData, session) {
   })
   
   output$overallPlot = renderPlotly({
+    init_if_needed(session, clientData)
     #These aren't used, but allow us to react to things changing on file IO
     a = input$oneUser
     b = input$headToHeadUsers
@@ -113,4 +124,23 @@ update_uis <- function(input, session) {
                     inputId = "groups",
                     choices = names(Voter_Group_Participants))
   #print(names(Voter_Group_Participants))
+}
+
+init_if_needed <- function(session, clientData) {
+  query <- parseQueryString(session$clientData$url_search)
+  
+  # Return a string with key-value pairs
+  print(paste(names(query), query, sep = "=", collapse=", "))
+  print(query)
+  print(class(query))
+  if (is.null(query[["gformurl"]])) {
+    print("No gformurl")
+  } else {
+    url = query[["gformurl"]]
+     google_df = read.csv(text=gsheet::gsheet2text(url),check.names = FALSE, 
+                          strip.white = FALSE, stringsAsFactors = FALSE)
+     glset_googleform_df(google_df)
+     update_uis(input, session)
+    print(paste("gformurl was ", query["gformurl"]))
+  }
 }

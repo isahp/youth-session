@@ -25,6 +25,7 @@ get_init_from_list <- function(alist, single = FALSE) {
   return(init)
 }
 shinyUI(fluidPage(
+  #Resetting the file input after file upload
   tags$script('
     Shiny.addCustomMessageHandler("resetFileInputHandler", function(x) {      
               var id = "#" + x + "_progress";
