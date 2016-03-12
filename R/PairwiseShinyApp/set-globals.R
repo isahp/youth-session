@@ -1,3 +1,13 @@
+Better_Value = 3.0
+Much_Better_Value = 9.0
+
+glset_better_value <- function(newVal) {
+  assign("Better_Value", newVal, envir = .GlobalEnv)  
+}
+
+glset_much_better_value <- function(newVal) {
+  assign("Much_Better_Value", newVal, envir = .GlobalEnv)  
+}
 
 glset_all_alts <- function(newVal) {
   assign("All_Alts", newVal, envir = .GlobalEnv)

@@ -46,6 +46,8 @@ shinyUI(fluidPage(
       tabsetPanel(
         tabPanel("Excel",
                  fileInput("theFile", label = "Excel xlsx Input File", accept = c('.xlsx'))
+#                 ,numericInput("better", "Better's numeric value:", min=1.1, max=9.0, step= 0.1, value = 3.0),
+#                 numericInput("muchBetter", "Much better's numeric value:", min=1.1, max=9.0, step=0.1, value = 9.0)
         ),
         tabPanel("Survey",
                  textInput("gformUrl", label="URL of google form spreadsheet"),

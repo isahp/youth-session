@@ -36,6 +36,7 @@ shinyServer(function(input, output, cD, session) {
   
   output$overallPlot = renderPlotly({
     init_if_needed(session, clientData)
+    update_better_vals(input)
     #These aren't used, but allow us to react to things changing on file IO
     a = input$oneUser
     b = input$headToHeadUsers
@@ -69,6 +70,7 @@ shinyServer(function(input, output, cD, session) {
       "No groups"
   })
   output$headToHeadPlot = renderPlotly({
+    update_better_vals(input)
     headToHeads = input$headToHeadUsers
     if (length(headToHeads) == 0) {
       return()
@@ -143,4 +145,13 @@ init_if_needed <- function(session, clientData) {
      update_uis(input, session)
     print(paste("gformurl was ", query["gformurl"]))
   }
+}
+
+update_better_vals <-function(input) {
+#  glset_better_value(input$better)
+#  glset_much_better_value(input$muchBetter)
+#  print(Better_Value)
+#  print(Much_Better_Value)
+#  print(input$muchBetter)
+  print("Updating calcs")
 }

@@ -11,7 +11,11 @@ Voter_Group_Participants = list()
 Group_Pairwises = list()
 Overall_Priorities = list()
 #The Voting Table
-Voting_String_Values = c(">>" = 9, ">"=3, "E"=1, "e"=1, "<"=1./3, "<<"=9)
+Voting_String_Values = c(">>" = Much_Better_value, 
+                         ">"= Better_Value, 
+                         "E"=1, "e"=1, 
+                         "<"=1./Better_Value, 
+                         "<<"=1./Much_Better_value)
 ################################################
 ####Start defining some useful functions.    ###
 ################################################

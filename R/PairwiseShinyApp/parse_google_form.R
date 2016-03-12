@@ -12,7 +12,9 @@
 
 source('set-globals.R')
 #'If a vote string matches the given name, we get that value
-Text_To_Value_Map = c("much better"=9, "better"=3, "equal" = 1, "same" = 1)
+Text_To_Value_Map = c("much better"=Much_Better_Value, 
+                      "better"=Better_Value, 
+                      "equal" = 1, "same" = 1)
 
 glset_googleform_df <- function(g_df) {
   glset_pairwise_googleform_df(g_df)
