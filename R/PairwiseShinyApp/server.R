@@ -34,6 +34,57 @@ shinyServer(function(input, output, cD, session) {
      p
   })
   
+  #The per user table
+  output$oneUserTable = renderDataTable({
+    #Get the user table
+    update_better_vals(input)
+    nUsers = length(Vote_Priorities)
+    nAlts = length(All_Alts)
+    mat <- matrix(nrow = nUsers, ncol = (nAlts+1))
+    for(row in 1:nUsers) {
+      mat[row, 1] = Voters[[row]]
+      for(col in 1:nAlts) {
+        mat[row, col+1] = Vote_Priorities[[row]][[col]]
+      }
+    }
+    rval=data.frame(mat)
+    colnames(rval)<-append(All_Alts, "Voter", 0)
+    return(rval)        
+  })
+  
+  #The groups table
+  output$groupsTable = renderDataTable({
+    #Get the user table
+    update_better_vals(input)
+    groupNames = names(Group_Priorities)
+    nGroups = length(groupNames)
+    nAlts = length(All_Alts)
+    mat <- matrix(nrow = nGroups, ncol = (nAlts+1))
+    for(row in 1:nGroups) {
+      mat[row,1] = groupNames[[row]]
+      for(col in 1:nAlts) {
+        mat[row, col+1] = Group_Priorities[[row]][[col]]
+      }
+    }
+    rval=data.frame(mat)
+    colnames(rval)<-append(All_Alts, "Voters", 0)
+    return(rval)        
+  })
+  
+  #The overall table
+  output$overallTable = renderTable({
+    #Get the user table
+    update_better_vals(input)
+    nAlts = length(All_Alts)
+    mat <- matrix(nrow = 1, ncol = (nAlts))
+    for(col in 1:nAlts) {
+      mat[1, col] = Overall_Priorities[[col]]
+    }
+    rval=data.frame(mat)
+    colnames(rval)<-All_Alts
+    print(rval)
+    return(rval)        
+  })
   output$overallPlot = renderPlotly({
     init_if_needed(session, clientData)
     update_better_vals(input)

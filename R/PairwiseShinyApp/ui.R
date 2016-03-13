@@ -64,18 +64,26 @@ shinyUI(fluidPage(
     mainPanel(
       tabsetPanel(
         tabPanel("Overall",
-                 plotlyOutput("overallPlot")
+                 plotlyOutput("overallPlot"),
+                 bsCollapsePanel(title="Data Table",
+                                 tableOutput("overallTable"))
         ),
         tabPanel("Individuals", 
                  selectInput("oneUser", label="Choose voter", choices = Voters), 
-                 plotlyOutput("oneUserPlot")
+                 plotlyOutput("oneUserPlot"),
+                 bsCollapsePanel(title="Data Table",
+                                 dataTableOutput("oneUserTable"))
                  ),
         tabPanel("Head-to-Head",
                  selectInput("headToHeadUsers", "Select Voters", choices = Voters, multiple = TRUE, selectize = TRUE, selected = get_init_from_list(Voters)),
                  plotlyOutput("headToHeadPlot")),
         tabPanel("Groups", 
                  selectInput("groups", "Select Groups", choices = names(Voter_Group_Participants), multiple = TRUE, selectize = TRUE, selected = get_init_from_list(names(Voter_Group_Participants))),
-                 plotlyOutput("groupsPlot"))
+                 plotlyOutput("groupsPlot"),
+                 bsCollapsePanel(title="Data Table",
+                                 dataTableOutput("groupsTable"))
+                 
+                 )
       )
     )
   )
