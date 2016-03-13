@@ -54,8 +54,8 @@ shinyUI(fluidPage(
                  actionButton("gformUrlGo", label = "Update"))
       ),
       bsCollapsePanel(title="Advanced Options"
-                      ,numericInput("better", "Better's numeric value:", min=1.1, max=9.0, step= 0.1, value = 3.0),
-                      numericInput("muchBetter", "Much better's numeric value:", min=1.1, max=9.0, step=0.1, value = 9.0)
+                      ,sliderInput("better", "Better's numeric value:", min=1.1, max=9.0, step= 0.1, value = 3.0),
+                      sliderInput("muchBetter", "Much better's numeric value:", min=1.1, max=9.0, step=0.1, value = 9.0)
       )
       
     ),
