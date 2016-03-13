@@ -15,6 +15,9 @@ source('set-globals.R')
 Text_To_Value_Map = c("much better"=Much_Better_Value, 
                       "better"=Better_Value, 
                       "equal" = 1, "same" = 1)
+Text_To_Sym_Value_Map = c("much better"=2,
+                          "better"=1,
+                          "equal" = 0, "same" = 0)
 
 glset_googleform_df <- function(g_df) {
   glset_pairwise_googleform_df(g_df)
@@ -51,15 +54,19 @@ glset_pairwise_googleform_df <- function(g_df) {
   users=make.unique(users)
   nusers = length(users)
   list_of_pws = list()
+  list_of_sym_pws = list()
   for(row in 1:nusers) {
     rval = get_pairwise_from_google_row(g_df[row,], alt_names, pw_cols)
     list_of_pws[[users[[row]]]]=rval
+    list_of_sym_pws[[users[[row]]]]=
+      get_pairwise_from_google_row(g_df[row,], alt_names, pw_cols, use_symbolic = TRUE)
   }
   glset_all_alts(alt_names)
   glset_vote_pairwises(list_of_pws)
-  print(pw_cols)
-  print(alt_names)
-  print(list_of_pws)
+  glset_vote_sym_pairwises(list_of_sym_pws)
+  #print(pw_cols)
+  #print(alt_names)
+  print(list_of_sym_pws)
   return(rval)
 }
 
@@ -86,18 +93,21 @@ get_google_user_name_col <- function(g_df) {
     return(NA)
   }
 }
-get_pairwise_from_google_row <- function(g_row, alt_names, pw_cols) {
+get_pairwise_from_google_row <- function(g_row, alt_names, pw_cols, use_symbolic = FALSE) {
   nalts = length(alt_names)
   rval = diag(nalts)
   dimnames(rval) <- list(alt_names, alt_names)
   for(pw_col in pw_cols) {
     alts = get_pairwise_cols_from_google_col(pw_col)
     string_vote = g_row[pw_col]
-    num_vote = get_google_vote_val(string_vote, alts[[1]], alts[[2]])
+    num_vote = get_google_vote_val(string_vote, alts[[1]], alts[[2]], use_symbolic)
     print(paste("working on col ", pw_col, " vote = ",string_vote, " num_vote = ", num_vote))
     if (!is.na(num_vote)) {
       rval[alts[1], alts[2]] = num_vote
-      rval[alts[2], alts[1]] = 1/num_vote
+      if (!use_symbolic)
+        rval[alts[2], alts[1]] = 1/num_vote
+      else
+        rval[alts[2], alts[1]] = -num_vote
     }
   }
   return(rval)
@@ -125,10 +135,13 @@ get_google_demographic_cols <- function(g_df) {
   return(cols[!as.logical(rval)])
 }
 
-vote_text_to_value <- function(text) {
+vote_text_to_value <- function(text, use_symbolic = FALSE) {
   for(pattern in names(Text_To_Value_Map)) {
     if (grepl(pattern, text, ignore.case = TRUE)) {
-      return(Text_To_Value_Map[[pattern]])
+      if (!use_symbolic)
+        return(Text_To_Value_Map[[pattern]])
+      else
+        return(Text_To_Sym_Value_Map[[pattern]])
     }
   }
   return(NA)
@@ -141,12 +154,22 @@ get_altnames_from_cols <- function(the_colnames) {
   as.character(rval)
 }
 
-get_google_vote_val <- function(g_vote, dom_alt, rec_alt) {
-  if (grepl(dom_alt, g_vote, fixed = TRUE)) {
-    return(vote_text_to_value(g_vote))
-  } else if (grepl(rec_alt, g_vote, fixed = TRUE)) {
-    return(1/vote_text_to_value(g_vote))
+get_google_vote_val <- function(g_vote, dom_alt, rec_alt, use_symbolic = FALSE) {
+  if (!use_symbolic) {
+    if (grepl(dom_alt, g_vote, fixed = TRUE)) {
+      return(vote_text_to_value(g_vote))
+    } else if (grepl(rec_alt, g_vote, fixed = TRUE)) {
+      return(1/vote_text_to_value(g_vote))
+    } else {
+      return(vote_text_to_value(g_vote))
+    }
   } else {
-    return(vote_text_to_value(g_vote))
+    if (grepl(dom_alt, g_vote, fixed = TRUE)) {
+      return(vote_text_to_value(g_vote, use_symbolic = TRUE))
+    } else if (grepl(rec_alt, g_vote, fixed = TRUE)) {
+      return(-vote_text_to_value(g_vote, use_symbolic = TRUE))
+    } else {
+      return(vote_text_to_value(g_vote, use_symbolic = TRUE))
+    }
   }
 }

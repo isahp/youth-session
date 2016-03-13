@@ -1,5 +1,8 @@
 Better_Value = 3.0
 Much_Better_Value = 9.0
+Symbolic_Better_Value = 1
+Symbolic_Much_Better_Value = 2
+Symbolic_Equals_Value = 0
 Input_Votes_File = "votes.xlsx"
 
 
@@ -17,6 +20,10 @@ glset_all_alts <- function(newVal) {
 
 glset_vote_pairwises <- function(newVal) {
   assign("Vote_Pairwises", newVal, envir = .GlobalEnv)
+}
+
+glset_vote_sym_pairwises <- function(newVal) {
+  assign("Vote_Sym_Pairwises", newVal, envir = .GlobalEnv)
 }
 
 glset_vote_priorities <- function(newVal) {

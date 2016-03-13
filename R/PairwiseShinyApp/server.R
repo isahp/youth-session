@@ -25,7 +25,8 @@ Query_Form_URL = ""
 shinyServer(function(input, output, cD, session) {
   update_globals(Input_Votes_File)
   output$oneUserPlot = renderPlotly({
-     p <- plot_ly(
+    update_better_vals(input)
+    p <- plot_ly(
        x = All_Alts,
        y = Vote_Priorities[[input$oneUser]],
        type = "bar"
@@ -46,6 +47,7 @@ shinyServer(function(input, output, cD, session) {
     p
   })
   output$groupsPlot = renderPlotly({
+    update_better_vals(input)
     groups = input$groups
     if (length(groups) == 0) {
       return()
@@ -147,10 +149,19 @@ init_if_needed <- function(session, clientData) {
 }
 
 update_better_vals <-function(input) {
-#  glset_better_value(input$better)
-#  glset_much_better_value(input$muchBetter)
-#  print(Better_Value)
-#  print(Much_Better_Value)
-#  print(input$muchBetter)
+  if (!is.numeric(input$better))
+    return()
+  else if (input$better < 1)
+    return()
+  else if (!is.numeric(input$muchBetter))
+    return()
+  else if (input$muchBetter < 1)
+    return()
+  glset_better_value(input$better)
+  glset_much_better_value(input$muchBetter)
+  update_better_vote_change()
+  print(Better_Value)
+  print(Much_Better_Value)
+  print(input$muchBetter)
   print("Updating calcs")
 }

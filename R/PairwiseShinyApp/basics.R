@@ -11,11 +11,17 @@ Voter_Group_Participants = list()
 Group_Pairwises = list()
 Overall_Priorities = list()
 #The Voting Table
+Voting_Symbolic_String_Values = c(">>" = Symbolic_Much_Better_Value, 
+                         ">"= Symbolic_Better_Value, 
+                         "E"=Symbolic_Equals_Value, 
+                         "e"=Symbolic_Equals_Value, 
+                         "<"=-Symbolic_Better_Value, 
+                         "<<"=-Symbolic_Much_Better_Value)
 Voting_String_Values = c(">>" = Much_Better_Value, 
-                         ">"= Better_Value, 
-                         "E"=1, "e"=1, 
-                         "<"=1./Better_Value, 
-                         "<<"=1./Much_Better_Value)
+                                  ">"= Better_Value,
+                                  "E"=1, "e"=1,
+                                  "<"=1./Better_Value,
+                                  "<<"=1./Much_Better_Value)
 ################################################
 ####Start defining some useful functions.    ###
 ################################################
@@ -53,7 +59,40 @@ get_allnames_from_dataframes <- function(list_of_df) {
   return(rval)
 }
 
-get_pairwise_from_votes <- function(a_df, listOfNames) {
+get_pairwise_from_sym <- function(sym) {
+  listOfNames <- dimnames(sym)[[1]]
+  size <- length(listOfNames)
+  rval <- matrix(nrow=size, ncol=size, dimnames = list(listOfNames, listOfNames))
+  #Init to zero
+  rval[] = 0
+  #Init diagonal to 1
+  for(i in 1:size)
+    rval[i,i]=1.0
+  for(row in 1:(size-1)) {
+    for(col in (row+1):size) {
+      rval[row,col]=get_vote_from_sym(sym[row,col])
+      rval[col,row]=get_vote_from_sym(sym[col,row])
+    }
+  }
+  rval
+}
+
+get_vote_from_sym <- function(val) {
+  if (val == 0) {
+    return(1)
+  } else if (val == 1) {
+    return(Better_Value)
+  } else if (val == 2) {
+    return(Much_Better_Value)
+  } else if (val == -1) {
+    return(1./Better_Value)
+  } else if (val == -2) {
+    return(1./Much_Better_Value)
+  } else {
+    stop(paste("Unknown symbolic vote ", str(val)))
+  }
+}
+get_pairwise_from_votes <- function(a_df, listOfNames, use_symbolic_vote = FALSE) {
   size <- length(listOfNames)
   rval <- matrix(nrow=size, ncol=size, dimnames = list(listOfNames, listOfNames))
   #Init to zero
@@ -72,23 +111,42 @@ get_pairwise_from_votes <- function(a_df, listOfNames) {
         stop(paste("Row ", rowName, "does not exist"))
       if (is.na(colIndex))
         stop(paste("Col ", colName, "does not exist"))
-      rval[rowIndex, colIndex] = string_vote_value(a_df[entry, 2])
-      rval[colIndex, rowIndex] = 1/string_vote_value(a_df[entry, 2])
+      rval[rowIndex, colIndex] = string_vote_value(a_df[entry, 2], use_symbolic_vote)
+      if (use_symbolic_vote)
+        rval[colIndex, rowIndex] = -string_vote_value(a_df[entry, 2], use_symbolic_vote)
+      else
+        rval[colIndex, rowIndex] = 1/string_vote_value(a_df[entry, 2], use_symbolic_vote)
     }
   }
   return(rval)
 }
 
-get_allpairwise_from_votes <- function(list_of_dfs, list_of_names) {
+get_allpairwise_from_votes <- function(list_of_dfs, list_of_names, use_symbolic = FALSE) {
   rval = list()
   for(df_name in names(list_of_dfs)) {
     a_df = list_of_dfs[[df_name]]
-    rval[[df_name]] = get_pairwise_from_votes(a_df, list_of_names)
+    rval[[df_name]] = get_pairwise_from_votes(a_df, list_of_names, use_symbolic)
   }
   return(rval)
 }
-string_vote_value <- function(sVote) {
+
+get_allpairwise_from_sym <- function(list_syms) {
+  rval = list()
+  for(sym_name in names(list_syms)) {
+    sym = list_syms[[sym_name]]
+    print("Working on symbolic matrix")
+    print(sym_name)
+    print(sym)
+    rval[[sym_name]] = get_pairwise_from_sym(sym)
+  }
+  print(rval)
+  return(rval)
+}
+
+string_vote_value <- function(sVote, use_symbolic_value = FALSE) {
   rval = Voting_String_Values[[sVote]]
+  if (use_symbolic_value)
+    rval = Voting_Symbolic_String_Values[[sVote]]
   if (is.na(rval))
     stop(paste("Unknown vote ", sVote))
   return(rval)
@@ -136,6 +194,7 @@ update_globals <- function(xlsxFile) {
   assign("Vote_Dataframes", get_voter_spreadsheets(xlsxFile), envir = .GlobalEnv)
   glset_all_alts(get_allnames_from_dataframes(Vote_Dataframes))
   glset_vote_pairwises(get_allpairwise_from_votes(Vote_Dataframes, All_Alts))
+  glset_vote_sym_pairwises(get_allpairwise_from_votes(Vote_Dataframes, All_Alts, use_symbolic = TRUE))
   glset_vote_priorities(lapply(Vote_Pairwises, FUN=function(x) eigen_largest(x)))
   glset_voters(names(Vote_Priorities))
   glset_voter_demographics(get_demographic_table())
@@ -143,6 +202,21 @@ update_globals <- function(xlsxFile) {
   glset_group_pairwises(lapply(Voter_Group_Participants, FUN = function(x) Vote_Pairwises[x]))
   glset_group_priorities(lapply(Group_Pairwises, FUN = function(x) eigen_largest(x)))
   glset_overall_priorities(eigen_largest(Vote_Pairwises))
-  print(Group_Priorities)
+  #print(Group_Priorities)
+  #print(Vote_Sym_Pairwises)
+  #print(Voter_Group_Participants)
+}
+
+update_better_vote_change <- function() {
+  print(Vote_Sym_Pairwises)
+  glset_vote_pairwises(get_allpairwise_from_sym(Vote_Sym_Pairwises))
+  print("WTF?!")
+  print(Vote_Pairwises)
+  glset_vote_priorities(lapply(Vote_Pairwises, FUN=function(x) eigen_largest(x)))
+  glset_group_pairwises(lapply(Voter_Group_Participants, FUN = function(x) Vote_Pairwises[x]))
+  glset_group_priorities(lapply(Group_Pairwises, FUN = function(x) eigen_largest(x)))
+  glset_overall_priorities(eigen_largest(Vote_Pairwises))
+  #print(Group_Priorities)
+  print(Vote_Sym_Pairwises)
   #print(Voter_Group_Participants)
 }
