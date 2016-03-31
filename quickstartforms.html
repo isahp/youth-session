@@ -137,7 +137,7 @@ rules for your alternative names.
   <li> Alternately if you have 7 or more alternatives, and you feel you must
     keep them all, you should probably not pairwise compare every alternative
     to every other alternative.  For 7 alternatives that is 21 questions, for
-    8 it is 28 questions, 9 it is 36, etc.  Your audience will most likely
+    8 alternatives it is 28 questions, 9 alternatives it is 36, etc.  Your audience will most likely
     get bored and annoyed by answering all of those questions.  Instead you
     can choose a limited selection of pairwise comparisons to perform and still
     arrive at valid results.
@@ -146,26 +146,127 @@ rules for your alternative names.
 <span aria-hidden="true" class="octicon octicon-link"></span></a>
 4. Getting started with Google Forms.
 </h3>
-
+In order to use google forms to make a questionnaire, you <u>must</u> have
+a google account.  If you do not already have one, you can create one
+by following this link <a href="https://accounts.google.com/signup">Google
+Account Signup</a>.  Once you have your account, you can get started with
+google forms by going to <a href="https://forms.google.com">forms.google.com</a>
+Several quick start guides to google forms can be found, some of which are:
+<ul>
+  <li><a href="https://support.google.com/docs/answer/87809?hl=en">Google help for forms</a>
+  <li><a href="https://www.youtube.com/watch?v=IPv9CPSxsSc">Youtube intro to google forms 2016</a>
+  <li><a href="https://www.uaa.alaska.edu/studentaffairs/advancingstaffexcellence/upload/Google-Form-Tutorial.pdf">
+    Quick Intro To Google Forms via University of Alaska</a>
+</ul>
 <h3><a id="gform-create" class="anchor" href="#gform-create" aria-hidden="true">
 <span aria-hidden="true" class="octicon octicon-link"></span></a>
 5. Create the google form questionnaire
 </h3>
-
+Your google form should have two types of questions: <u>Demographic</u> and
+<u>Pairwise</u>, plus a question for the name of the participant.  Demographic
+questions are simply questions that give you information about the respondent.
+The Pairwise questions are the ones which ask which alternative is better
+and by how much.  Both types of questions should follow a very straightforward
+format.
+<ul>
+  <li><u>The name question:</u> That question can be anywhere in the questionnaire.
+    But the text of that question must be <u>Name</u> spelled and capitalized
+    exactly that way.
+  <li><u>Demographic Questions:</u> They can be multiple choice, or fill in the
+    blank, but must not contain the word <u>versus</u> in the question.  That
+    is the only rule.  Any question that does not contain the word <u>versus</u>
+    is automatically considered a demographic question.
+  <li><u>Pairwise Questions:</u> These questions must always be of the form
+    <u>Alternative 1 versus Alternative 2</u>.  In other words an alternative
+    name, the word <u>versus</u> (spelled exactly that way, but captialization
+    does not matter) and then another alternative name.  The question can have
+    Hint Text that more fully describes the question, but the question text
+    itself must have the A versus B form.  In addition the question must be
+    either Multiple Choice, or "Drop down", with the following options:
+    <ol>
+      <li> They are equal
+      <li> Alternative 1 is better
+      <li> Alternative 1 is much better
+      <li> Alternative 2 is better
+      <li> Alternative 2 is much better
+    </ol>
+  <li><u>Notes on the pairwise questions response section</u>
+    <ul>
+      <li> The order does not make a difference (equal could come at the end for instance).
+      <li> Alternative 1 and Alternative 2 must be spelled and captialized exactly as in the question text.
+      <li> The words "better" and "much better" must appear spelled exactly.
+      <li> The equals option is keyed in on the word "equal" in that option so you could add other items.
+      <li> Because "equal" is a keyword used, please do not use an alternative with the
+        word "equal" in its name!
+    </ul>
 <h3><a id="gform-setup" class="anchor" href="#gform-setup" aria-hidden="true">
 <span aria-hidden="true" class="octicon octicon-link"></span></a>
 6. Configuring the Google Form
 </h3>
-
+Once you have completed the previous step, you can immediately begin to
+solicit responses from your participants.  However, in order to use those
+responses, we need to configure your google form to export the results
+to a google spreadsheet.  To do this:
+<ol>
+  <li> Click on the "Responses Tab" at the top of the google form editor.
+  <li> Click the "..." item in the upper right of the "Responses Tab" area and
+    choose the "Select Response Destination"
+  <li> Choose "Create a new spreadsheet" and give it an informative name.
+</ol>
+That is it!  Next we need to configure that spreadsheet, so that we can
+access it to do calculations.
 <h3><a id="gsheet-setup" class="anchor" href="#gsheet-setup" aria-hidden="true">
 <span aria-hidden="true" class="octicon octicon-link"></span></a>
 7. Configuring the Google Spreadsheet of Responses
 </h3>
-
+In the previous step, you told your google form to output the results to
+a google spreadsheet.  Next we need to configure that spreadsheet to be readable
+by the pairwise comparison web app.
+<ol>
+  <li>Go to <a href="http://spreadsheets.google.com">spreadsheets.google.com</a>.
+  <li>Select the newly created spreadsheet.
+  <li>Click the "Share" button in the upper right corner.
+  <li>Click "Get shareable link" in the upper right corner of the popup and click Done on the popup.
+  <li>Then choose the "File" menu, "Publish to the web"
+  <li>In the popup leave everything as is, and simply click the publish button.
+  <li>Copy the link from that popup, as it is needed for the next step.
+</ol>
 <h3><a id="results" class="anchor" href="#results" aria-hidden="true">
 <span aria-hidden="true" class="octicon octicon-link"></span></a>
 8. Seeing the results
 </h3>
+To see the results, use the link to the published google spreadsheet you got
+from the last step.  The steps are:
+<ol>
+  <li> Go to <a href="http://bit.ly/isahp2016-youth-app">bit.ly/isahp2016-youth-app</a>
+  <li> On the upper left, choose the "Survey" tab.
+  <li> This will show an input to put the link to the google spreadsheet in.
+  <li> Paste the link to your spreadsheet, and click the "Update" button.
+  <li> Now the UI should show you the results, by individual, group, etc.
+</ol>
+You can also send the URL to the google spreadsheet directly by doing the following.
+<ol>
+  <li>Point your browser at: http://http://ec2-52-37-195-69.us-west-2.compute.amazonaws.com/pairwise-app/?gformurl=YOUR_GSPREADSHEET_URL_GOES_HERE
+  <li>Go to a link shortener (<a href="http://bit.ly">bit.ly</a> for example) and
+    paste the above url into it, to get a more reasonable url.  I did this for my
+    music choice example, and that link is available by
+    <a href="http://bit.ly/music-choice-example-results">bit.ly/music-choice-example-results</a>
+    which is a much nicer URL.
+</ol>
+
+<h3><a id="help" class="anchor" href="#help" aria-hidden="true">
+<span aria-hidden="true" class="octicon octicon-link"></span></a>
+9. Getting help
+</h3>
+There are several methods available for getting help:
+<ul>
+  <li>There is a <a href="https://groups.google.com/forum/#!forum/isahp2016youth">
+    google group for isahp2016 youth</a> and this project is a part of that effort.
+    Feel free to post questions there.
+  <li>The source code for this project is available on <a href="https://github.com/wjladams/youth-isahp">
+    github here</a>.  You can submit bugs at the <a href="https://github.com/wjladams/youth-isahp/issues">
+      github bug submission page for the project</a>.
+</ul>
 
       </section>
     </div>
