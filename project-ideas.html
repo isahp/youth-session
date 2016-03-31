@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Quick Start Pairwise Comparison Guide">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Samples ISAHP 2016 Youth</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a href="index.html">Return to Main Page</a>
+          <!--<a id="forkme_banner" href="https://github.com/wjladams/youth-isahp">View on GitHub</a>-->
+
+          <h1 id="project_title">Sample Projects</h1>
+          <h2 id="project_tagline">ISAHP 2016 Youth Sample Projects</h2>
+
+<!--
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/wjladams/youth-isahp/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/wjladams/youth-isahp/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+ -->
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+<h3><a id="ex1" class="anchor" href="#ex1" aria-hidden="true">
+  <span aria-hidden="true" class="octicon octicon-link"></span></a>
+1. Using the pairwise process to make a class decision</h3>
+
+One of the basic tools of AHP/ANP theory is the process of pairwise comparing a
+set of items to understand their overall importance. &nbsp;The idea is you have a
+collection of items you wish to rank from best to worst (sports teams, for instance),
+with some notion of how much better each one is than the previous one. &nbsp;This task
+can be difficult to do directly, and so instead we pairwise compare the items. &nbsp; For instance:
+<ul>
+  <li>Say we have teams <b>A, B, C, D</b>&nbsp;that we wish to rank.</li>
+  <li>We instead pairwise compare them by answering:</li>
+  <ul>
+    <li>Which is better <b>A</b>&nbsp;or <b>B</b>, and how much better is it (on a scale of 1-9, 1 meaning equals,
+      9 meaning much much better)?</li>
+    <li>Which is better <b>B</b>&nbsp;or <b>C</b>, and how much?</li>
+    <li>Which is better <b>C</b>&nbsp;or&nbsp;<b>D</b>, and how much?</li>
+    <li>Which is better&nbsp;<b>A</b>&nbsp;or&nbsp;<b>C</b>, and how much?</li>
+    <li>Which is better&nbsp;<b>B</b>&nbsp;or&nbsp;<b>D</b>, and how much?</li>
+    <li>Which is better&nbsp;<b>A</b>&nbsp;or&nbsp;<b>D</b>, and how much?</li>
+  </ul>
+  <li>There is some mathematics done on these numbers, that then would give you
+    scores between 0 and 1 for each of <b>A, B, C, D</b>&nbsp;respectively. &nbsp;
+    These scores then tell us which one is better and by how much.</li>
+</ul>
+
+<div><h5>Project Idea:</h5>
+  A student could choose a question that her whole class needs to answer,
+  for instance where the classes next outing should be. &nbsp;The student would
+  need to collect the alternatives, and create a questionnaire similar to&nbsp;
+  <a href="https://github.com/wjladams/youth-isahp/blob/master/QuestionnaireSimplified/SampleAHPQuestionnaire.jpg" style="color:rgb(51,51,51);font-size:13.3333px;background-image:initial;background-color:rgb(231,231,231);background-repeat:initial" target="_blank" rel="nofollow">
+    the sample questionnaire</a>&nbsp;and put those answers in an excel file. &nbsp;
+    That file could then be fed into our application to calculate resulting priorities and visual the results.
+     &nbsp;The student could then interpret those results (and discover if the boys and girls in the class
+     differ, and how; or perhaps how the classes opinions differ by age group; or what is the trend as age
+     goes up on each of the options).
+</div>
+
+<h3><a id="ex2" class="anchor" href="#ex2" aria-hidden="true">
+  <span aria-hidden="true" class="octicon octicon-link"></span></a>
+2. Write a program to take pairwise comparisons and turn them into priorities</h3>
+
+The mathematics involved in taking pairwise comparisons and turning them into
+priorities uses the eigenvectors of the pairwise comparison matrix.
+In particular the largest eigenvector, i.e. the eigenvector with the largest
+eigenvalue.  There are several ways to go about finding the largest eigenvector
+of a matrix.  A student could implement such an algorithm in a language of
+their choice, and write some samples calculations to verify their algorithm
+works.  There are many accessible programming languages a student could choose
+to use, e.g. Python, Java, Javascript, C, C++.   Freely available tools, e.g.
+sagemath, have the builtin capacity to calculate the all of the eigenvectors
+of a given matrix and could be used for verification.
+
+<h3><a id="ex3" class="anchor" href="#ex3" aria-hidden="true">
+  <span aria-hidden="true" class="octicon octicon-link"></span></a>
+3. Create an ANP model with the freely available Super Decisions application</h3>
+
+ANP is more intricate form of AHP, but it can still be accessible for simple problems.
+ Dr. Adams developed a teaching and research application called
+ <a href="http://superdecisions.com">SuperDecisions</a>
+ that can be used to create ANP models for decision making.
+  Dr. Rokou is continuing Dr. Adams work and working on an updated release of
+  SuperDecisions to be available shortly.
+
+  <h5>Project Idea 1:</h5>
+ A student could research an interesting decision for
+ their class, and model that decision in SuperDecisions.
+ <h5>Project Idea 2:</h5>
+ Another option is to use SuperDecisions to predict market share.
+  A market share problem can be something like
+   "Which restaurant will get the most business?" to
+    "What percentage of the vote is a presidential candidate likely to get?".
+
+
+
+
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Youth-isahp maintained by <a href="https://github.com/wjladams">wjladams</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+
+
+  </body>
+</html>
