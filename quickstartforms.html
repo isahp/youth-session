@@ -21,7 +21,7 @@
           <h1 id="project_title">Quick Start With Google Forms</h1>
           <h2 id="project_tagline">Quick Start To Pairwise Project With Google Forms</h2>
 
-<!-- 
+<!--
             <section id="downloads">
               <a class="zip_download_link" href="https://github.com/wjladams/youth-isahp/zipball/master">Download this project as a .zip file</a>
               <a class="tar_download_link" href="https://github.com/wjladams/youth-isahp/tarball/master">Download this project as a tar.gz file</a>
@@ -38,8 +38,8 @@
 Welcome, if you are here then either you are considering participation in the Youth
 Session at ISAHP 2016 in London <a href="http://isahp.org">http://isahp.org</a>, or
 you are interested in using the tool Dr. Adams wrote to get pairwise information
-from google forms and produce interesting information.  In either case you can see
-an example of the results of using this process at
+from google forms and produce individual, group, and subgroup priorities.
+In either case you can see an example of the results of using this process at
 <a href="http://bit.ly/music-choice-example-results">Music Preference Example</a>.
 
 <h3><a id="outline" class="anchor" href="#outline" aria-hidden="true">
@@ -48,6 +48,7 @@ Outline of Quickstart Document
 </h3>
 This document consists of the following sections:
 <ol>
+  <li><a href="#background">Background</a>
   <li><a href="#pick-problem">How to pick an interesting problem.</a>
   <li><a href="#choose-alts">How to choose alternatives.</a>
   <li><a href="#gform-start">Getting started with Google Forms.</a>
@@ -55,42 +56,115 @@ This document consists of the following sections:
   <li><a href="#gform-setup">Configuring the Google Form.</a>
   <li><a href="#gsheet-setup">Configuring the Google Spreadsheet of Responses.</a>
   <li><a href="#results">Seeing the results.</a>
-  
+
 </ol>
+
+<h3><a id="background" class="anchor" href="#background" aria-hidden="true">
+<span aria-hidden="true" class="octicon octicon-link"></span></a>
+1. Background Material
+</h3>
+AHP is a multicriterion decision method developed by Dr. Saaty in the 1970's.
+It has several pieces to it, including a method of breaking down complex
+decisions into simpler elements, the decision hierarchy.  In addition there
+is a method for understanding how important various pieces of the decision
+are, called the pairwise comparison method.  A brief introduction to AHP
+theory can be found at <a href="https://mi.boku.ac.at/ahp/ahptutorial.pdf">AHP
+Tutorial</a>, and pages 7-10 of that document discuss pairwise comparisons.
+<p>
+This tool only covers the pairwise comparison part of AHP theory.  However,
+this tool can be used to do multiple voter pairwise comparisons in an
+elegant and very visual method.
 
 <h3><a id="pick-problem" class="anchor" href="#pick-problem" aria-hidden="true">
 <span aria-hidden="true" class="octicon octicon-link"></span></a>
-1. How To Pick An Interesting Problem
+2. How To Pick An Interesting Problem
 </h3>
-
+Pairwise comparisons are used to find an individual's or group's opinion on
+a particular set of alternatives.  Pairwise comparisons not only let us find out
+an individual, or group's preferences, but how strong those preferences are.
+<p>
+<u>Example:</u> We want to know folks preferences for types of music.  For
+instance, in a classroom we are going to allow music to be played during
+lunch time.  We have 4 play lists to choose from, Rock, Country, Pop, and
+Classical.  We would like to play the music that most people want to hear,
+taking into consideration if folks really like or hate a particular type.
+<p>
+  Pairwise comparisons is a perfect method for solving this problem.  We
+  would ask our students to answer the following questions:
+  <ul>
+    <li> Which is better, Rock or Country, and by how much on a scale of 2-9?
+    <li> Which is better, Country or Pop, and by how much on a scale of 2-9?
+    <li> Which is better, Pop or Classical, and by how much on a scale of 2-9?
+    <li> Which is better, Rock or Pop, and by how much on a scale of 2-9?
+    <li> Which is better, Country or Classical, and by how much on a scale of 2-9?
+    <li> Which is better, Rock or Classical, and by how much on a scale of 2-9?
+  </ul>
+  The AHP pairwise process allows us to take that data and turn it into overall
+  preferences for individuals and the group for each of these types of music.
+  Whichever music type is preferred by the group is the one we should generally
+  play.
+  <p>
+  <u>Picking a good problem:</u>  A good problem for this pairwise process should
+  follow these general rules.
+  <ol>
+    <li> We have a group of alternatives that we want to know the group's preference of.
+      For example, the music types mentioned above.
+    <li> Make the alternatives you are choosing between interesting to your participants.
+      For instance, choosing a favorite programming language would not be interesting
+      to a general audience, but would be interesting to computer tech folks.
+    <li> There should be at least 3 alternatives we are choosing between (to make it interesting)
+      and there should generally be 7 or less alternatives.  Note: if you have 7 alternatives
+      there will be 21 questions, which is quite a lot.  However if you truly
+      have a lot of choices, you can ask less questions and still get good results.
+    <li> Include demographic data about your participants.  With that demographic
+      data, e.g. age, favorite color, gender, etc, you can look at the differences
+      and similarities between group opinions.  For instance, perhaps girls prefer
+      Rock music and boys prefer Classical in your group.
+  </ol>
 <h3><a id="choose-alts" class="anchor" href="#choose-alts" aria-hidden="true">
 <span aria-hidden="true" class="octicon octicon-link"></span></a>
-2. How to choose alternatives
+3. How to choose alternatives
 </h3>
-
+Once we have the question formulated, and a preliminary set of alternative, i.e.
+a set of things we want to know folks preferences about, try to follow these
+rules for your alternative names.
+<ol>
+  <li>The alternative names should be short, but informative.
+  <li>If you have more than 7 alternatives, consider coalescing your alternatives
+    down to a smaller grouping.  In our music example, we may have started off
+    with Punk Rock, Alternative, Metal, and Progressive Rock, all as options.
+    We could coalesce those into a single "Rock" option.
+  <li> Alternately if you have 7 or more alternatives, and you feel you must
+    keep them all, you should probably not pairwise compare every alternative
+    to every other alternative.  For 7 alternatives that is 21 questions, for
+    8 it is 28 questions, 9 it is 36, etc.  Your audience will most likely
+    get bored and annoyed by answering all of those questions.  Instead you
+    can choose a limited selection of pairwise comparisons to perform and still
+    arrive at valid results.
+</ol>
 <h3><a id="gform-start" class="anchor" href="#gform-start" aria-hidden="true">
 <span aria-hidden="true" class="octicon octicon-link"></span></a>
-3. Getting started with Google Forms.
+4. Getting started with Google Forms.
 </h3>
 
 <h3><a id="gform-create" class="anchor" href="#gform-create" aria-hidden="true">
 <span aria-hidden="true" class="octicon octicon-link"></span></a>
-4. Create the google form questionnaire
+5. Create the google form questionnaire
 </h3>
 
 <h3><a id="gform-setup" class="anchor" href="#gform-setup" aria-hidden="true">
 <span aria-hidden="true" class="octicon octicon-link"></span></a>
-5. Configuring the Google Form
+6. Configuring the Google Form
 </h3>
 
 <h3><a id="gsheet-setup" class="anchor" href="#gsheet-setup" aria-hidden="true">
 <span aria-hidden="true" class="octicon octicon-link"></span></a>
-6. Configuring the Google Spreadsheet of Responses
+7. Configuring the Google Spreadsheet of Responses
 </h3>
 
 <h3><a id="results" class="anchor" href="#results" aria-hidden="true">
 <span aria-hidden="true" class="octicon octicon-link"></span></a>
-7. Seeing the results
+8. Seeing the results
 </h3>
 
       </section>
@@ -104,7 +178,7 @@ This document consists of the following sections:
       </footer>
     </div>
 
-    
+
 
   </body>
 </html>
