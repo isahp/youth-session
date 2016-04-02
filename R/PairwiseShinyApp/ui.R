@@ -45,6 +45,7 @@ shinyUI(fluidPage(
   sidebarLayout(
     sidebarPanel(
       h2("Inputs"),
+      radioButtons("ChartType", label="Chart Type:", inline=TRUE,  choices=c("Bar" = "bar", "Line" = "line")),
       tabsetPanel(
         tabPanel("Excel",
                  fileInput("theFile", label = "Excel xlsx Input File", accept = c('.xlsx'))

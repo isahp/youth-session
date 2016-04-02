@@ -29,7 +29,7 @@ shinyServer(function(input, output, cD, session) {
     p <- plot_ly(
        x = All_Alts,
        y = Vote_Priorities[[input$oneUser]],
-       type = "bar"
+       type = input$ChartType
      )
      p
   })
@@ -92,9 +92,11 @@ shinyServer(function(input, output, cD, session) {
     a = input$oneUser
     b = input$headToHeadUsers
     c = input$groups
-    p <- plot_ly(type="bar",
+    p <- plot_ly(
                  x = All_Alts,
-                 y = Overall_Priorities)    
+                 y = Overall_Priorities,
+                 type = input$ChartType
+                 )    
     p
   })
   output$groupsPlot = renderPlotly({
@@ -103,7 +105,9 @@ shinyServer(function(input, output, cD, session) {
     if (length(groups) == 0) {
       return()
     }
-    p <- plot_ly(type="bar")
+    p <- plot_ly(
+      type = input$ChartType
+    )
     print('Trying to update users plot')
     print(groups)
     for(user in groups) {
@@ -113,6 +117,7 @@ shinyServer(function(input, output, cD, session) {
                      x = All_Alts,
                      y = values,
                      name = user,
+                     type = input$ChartType,
                      evaluate = TRUE
       )
     }
@@ -127,7 +132,9 @@ shinyServer(function(input, output, cD, session) {
     if (length(headToHeads) == 0) {
       return()
     }
-    p <- plot_ly(type="bar")
+    p <- plot_ly(
+      type = input$ChartType
+    )
     for(user in headToHeads) {
       values = Vote_Priorities[[user]]
       #print(paste("Working on user ", user))
@@ -135,6 +142,7 @@ shinyServer(function(input, output, cD, session) {
         x = All_Alts,
         y = values,
         name = user,
+        type = input$ChartType,
         evaluate = TRUE
       )
     }
