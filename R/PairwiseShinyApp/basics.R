@@ -11,12 +11,12 @@ Voter_Group_Participants = list()
 Group_Pairwises = list()
 Overall_Priorities = list()
 #The Voting Table
-Voting_Symbolic_String_Values = c(">>" = Symbolic_Much_Better_Value, 
-                         ">"= Symbolic_Better_Value, 
+Voting_Symbolic_String_Values = c(">>" = -Symbolic_Much_Better_Value, 
+                         ">"= -Symbolic_Better_Value, 
                          "E"=Symbolic_Equals_Value, 
                          "e"=Symbolic_Equals_Value, 
-                         "<"=-Symbolic_Better_Value, 
-                         "<<"=-Symbolic_Much_Better_Value)
+                         "<"=Symbolic_Better_Value, 
+                         "<<"=Symbolic_Much_Better_Value)
 Voting_String_Values = c(">>" = Much_Better_Value, 
                                   ">"= Better_Value,
                                   "E"=1, "e"=1,
@@ -144,9 +144,14 @@ get_allpairwise_from_sym <- function(list_syms) {
 }
 
 string_vote_value <- function(sVote, use_symbolic_value = FALSE) {
+  theNames = names(Voting_String_Values)
+  if (!(sVote %in% theNames)) {
+    stop(paste0("Vote value '", sVote, "' is unknown"))
+  }
   rval = Voting_String_Values[[sVote]]
-  if (use_symbolic_value)
+  if (use_symbolic_value) {
     rval = Voting_Symbolic_String_Values[[sVote]]
+  }
   if (is.na(rval))
     stop(paste("Unknown vote ", sVote))
   return(rval)
