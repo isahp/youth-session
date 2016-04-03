@@ -8,6 +8,7 @@
 library(shiny)
 library(plotly)
 library(gsheet)
+library(googlesheets)
 source("basics.R")
 source('parse_google_form.R')
 # Initial Inputs
@@ -24,6 +25,9 @@ list_to_string <- function(obj, listname) {
 Query_Form_URL = ""
 shinyServer(function(input, output, cD, session) {
   update_globals(Input_Votes_File)
+  observe({
+    init_if_needed(input, session, clientData)
+  })
   output$oneUserPlot = renderPlotly({
     update_better_vals(input)
     p <- plot_ly(
@@ -86,7 +90,6 @@ shinyServer(function(input, output, cD, session) {
     return(rval)        
   })
   output$overallPlot = renderPlotly({
-    init_if_needed(session, clientData)
     update_better_vals(input)
     #These aren't used, but allow us to react to things changing on file IO
     a = input$oneUser
@@ -176,6 +179,23 @@ shinyServer(function(input, output, cD, session) {
   observe({
     gformUrlFx()
   })
+  
+  gsheetUrlFx = eventReactive(input$gsheetUrlGo, {
+    url = input$gsheetUrl
+    if (is.null(url) || url == "" )
+      return(TRUE)
+    print("In gSheetURLFX?")
+    update_globals(url, type = "gsheet")
+    update_uis(input, session)
+    session$sendCustomMessage(type = "resetFileInputHandler", "theFile")
+    parseErrs = getParsingErrors()
+    if (!is.na(parseErrs))
+      sendAlert(input = input, session = session, msg = parseErrs)
+    #return(TRUE)
+  })
+  observe({
+    gsheetUrlFx()
+  })
 })
 
 update_uis <- function(input, session) {
@@ -191,7 +211,7 @@ update_uis <- function(input, session) {
   #print(names(Voter_Group_Participants))
 }
 
-init_if_needed <- function(session, clientData) {
+init_if_needed <- function(input, session, clientData) {
   query <- parseQueryString(session$clientData$url_search)
   
   # Return a string with key-value pairs
@@ -207,6 +227,15 @@ init_if_needed <- function(session, clientData) {
      glset_googleform_df(google_df)
      update_uis(input, session)
     print(paste("gformurl was ", query["gformurl"]))
+  }
+  if (!is.null(query[["gsheetUrl"]])) {
+    url = query[["gsheetUrl"]]
+    update_globals(url, type = "gsheet")
+    update_uis(input, session)
+    session$sendCustomMessage(type = "resetFileInputHandler", "theFile")
+    parseErrs = getParsingErrors()
+    if (!is.na(parseErrs))
+      sendAlert(input = input, session = session, msg = parseErrs)
   }
 }
 

@@ -51,8 +51,12 @@ shinyUI(fluidPage(
       h2("Inputs"),
       radioButtons("ChartType", label="Chart Type:", inline=TRUE,  choices=c("Bar" = "bar", "Line" = "line")),
       tabsetPanel(
-        tabPanel("Excel",
+        tabPanel("XLSX",
                  fileInput("theFile", label = "Excel xlsx Input File", accept = c('.xlsx'))
+        ),
+        tabPanel("GSheet",
+                 textInput("gsheetUrl", label="URL of gspreadsheet"),
+                 actionButton("gsheetUrlGo", label = "Update")
         ),
         tabPanel("Survey",
                  textInput("gformUrl", label="URL of google form spreadsheet"),

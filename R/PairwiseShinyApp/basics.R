@@ -1,4 +1,5 @@
 library(openxlsx)
+library(googlesheets)
 source("common-fxs.R")
 source("set-globals.R")
 #Voter spreadsheets will be created initially
@@ -37,8 +38,22 @@ get_voter_spreadsheets <- function(xlsxFile = Input_Votes_File) {
   return(rval)
 }
 
+get_voter_spreadsheets_gs <- function(g_url) {
+  ginfo = gs_url(g_url)
+  sheetNames = gs_ws_ls(ginfo)
+  rval = list()
+  wsNumb = 1
+  for(sheetName in sheetNames) {
+    if (tolower(trimws(sheetName)) != "info")
+      rval[[sheetName]] = gs_read(ginfo, ws = wsNumb, col_names = FALSE)
+    wsNumb = wsNumb + 1
+  }
+  return(rval)
+}
+
 get_demographic_table <- function(xlsxFile = Input_Votes_File) {
   sheetNames = getSheetNames(xlsxFile)
+  print("Getting demo")
   if ("info" %in% sheetNames) {
     a_df = read.xlsx(xlsxFile, sheet="info", rowNames = TRUE, colNames = TRUE)
     for(col in 1:ncol(a_df)) {
@@ -51,6 +66,23 @@ get_demographic_table <- function(xlsxFile = Input_Votes_File) {
     return(list())
   }
 }
+
+get_demographic_table_gs <- function(url) {
+  ginfo = gs_url(url)
+  sheetNames = gs_ws_ls(ginfo)
+  if ("info" %in% sheetNames) {
+    a_df = gs_read(ginfo, sheet="info", col_names = TRUE)
+    for(col in 1:ncol(a_df)) {
+      if ("character" %in% class(a_df[[col]])) {
+        a_df[[col]] = as.factor(a_df[[col]])
+      }
+    }
+    return(a_df)
+  } else {
+    return(list())
+  }
+}
+
 get_allnames_from_dataframes <- function(list_of_df) {
   rval = vector(mode="character")
   for(a_df in list_of_df) {
@@ -105,6 +137,8 @@ get_pairwise_from_votes <- function(a_df, listOfNames, use_symbolic_vote = FALSE
   for(entry in 1:nrow(a_df)) {
     rowName = a_df[entry, 1]
     colName = a_df[entry, 3]
+    val = a_df[[entry, 2]]
+    #print(paste0("Val=", val, " class=", class(val)))
     rowIndex = match(rowName, listOfNames)
     colIndex = match(colName, listOfNames)
     if (!is.na(colName)) {
@@ -112,11 +146,11 @@ get_pairwise_from_votes <- function(a_df, listOfNames, use_symbolic_vote = FALSE
         stop(paste("Row ", rowName, "does not exist"))
       if (is.na(colIndex))
         stop(paste("Col ", colName, "does not exist"))
-      rval[rowIndex, colIndex] = string_vote_value(a_df[entry, 2], use_symbolic_vote, rowName, colName, sheet_name)
+      rval[rowIndex, colIndex] = string_vote_value(val, use_symbolic_vote, rowName, colName, sheet_name)
       if (use_symbolic_vote)
-        rval[colIndex, rowIndex] = -string_vote_value(a_df[entry, 2], use_symbolic_vote, rowName, colName, sheet_name)
+        rval[colIndex, rowIndex] = -string_vote_value(val, use_symbolic_vote, rowName, colName, sheet_name)
       else
-        rval[colIndex, rowIndex] = 1/string_vote_value(a_df[entry, 2], use_symbolic_vote, rowName, colName, sheet_name)
+        rval[colIndex, rowIndex] = 1/string_vote_value(val, use_symbolic_vote, rowName, colName, sheet_name)
     }
   }
   return(rval)
@@ -135,12 +169,12 @@ get_allpairwise_from_sym <- function(list_syms) {
   rval = list()
   for(sym_name in names(list_syms)) {
     sym = list_syms[[sym_name]]
-    print("Working on symbolic matrix")
-    print(sym_name)
-    print(sym)
+    #print("Working on symbolic matrix")
+    #print(sym_name)
+    #print(sym)
     rval[[sym_name]] = get_pairwise_from_sym(sym)
   }
-  print(rval)
+  #print(rval)
   return(rval)
 }
 
@@ -157,12 +191,14 @@ string_vote_value <- function(sVote, use_symbolic_value = FALSE
       newMsgs = append(ERROR_MSGS_PARSE, msg)
       assign("ERROR_MSGS_PARSE", newMsgs, envir = .GlobalEnv)
     }
+    print(msg)
     if (use_symbolic_value) {
       return(Symbolic_Equals_Value)
     } else {
       return(Voting_String_Values[["E"]])
     }
   }
+  #print(paste0("Trying vote ", sVote, " class is ", class(sVote)))
   rval = Voting_String_Values[[sVote]]
   if (use_symbolic_value) {
     rval = Voting_Symbolic_String_Values[[sVote]]
@@ -196,7 +232,7 @@ get_group_participants <- function(voter_demo_df) {
     theCol = voter_demo_df[[colName]]
     if ("factor" %in% class(theCol)) {
       #We have a factor demographic, use it
-      print(levels(theCol))
+      #print(levels(theCol))
       for(alevel in levels(theCol)) {
         label = paste(colName, alevel, sep = " : ")
         indices = which(voter_demo_df[colName] == alevel)
@@ -213,15 +249,16 @@ get_group_participants <- function(voter_demo_df) {
 update_globals <- function(xlsxFile, type = "xlsx") {
   if (type == "xlsx") {
     assign("Vote_Dataframes", get_voter_spreadsheets(xlsxFile), envir = .GlobalEnv)
+    glset_voter_demographics(get_demographic_table(xlsxFile = xlsxFile))
   } else if (type == "gsheet") {
-    
+    assign("Vote_Dataframes", get_voter_spreadsheets_gs(xlsxFile), envir = .GlobalEnv)
+    glset_voter_demographics(get_demographic_table_gs(xlsxFile))
   }
   glset_all_alts(get_allnames_from_dataframes(Vote_Dataframes))
   glset_vote_pairwises(get_allpairwise_from_votes(Vote_Dataframes, All_Alts))
   glset_vote_sym_pairwises(get_allpairwise_from_votes(Vote_Dataframes, All_Alts, use_symbolic = TRUE))
   glset_vote_priorities(lapply(Vote_Pairwises, FUN=function(x) eigen_largest(x)))
   glset_voters(names(Vote_Priorities))
-  glset_voter_demographics(get_demographic_table())
   glset_voter_group_participants(get_group_participants(Voter_Demographics))
   glset_group_pairwises(lapply(Voter_Group_Participants, FUN = function(x) Vote_Pairwises[x]))
   glset_group_priorities(lapply(Group_Pairwises, FUN = function(x) eigen_largest(x)))
@@ -232,16 +269,15 @@ update_globals <- function(xlsxFile, type = "xlsx") {
 }
 
 update_better_vote_change <- function() {
-  print(Vote_Sym_Pairwises)
+  #print(Vote_Sym_Pairwises)
   glset_vote_pairwises(get_allpairwise_from_sym(Vote_Sym_Pairwises))
-  print("WTF?!")
-  print(Vote_Pairwises)
+  #print(Vote_Pairwises)
   glset_vote_priorities(lapply(Vote_Pairwises, FUN=function(x) eigen_largest(x)))
   glset_group_pairwises(lapply(Voter_Group_Participants, FUN = function(x) Vote_Pairwises[x]))
   glset_group_priorities(lapply(Group_Pairwises, FUN = function(x) eigen_largest(x)))
   glset_overall_priorities(eigen_largest(Vote_Pairwises))
   #print(Group_Priorities)
-  print(Vote_Sym_Pairwises)
+  #print(Vote_Sym_Pairwises)
   #print(Voter_Group_Participants)
 }
 
