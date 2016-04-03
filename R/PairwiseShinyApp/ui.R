@@ -38,6 +38,10 @@ shinyUI(fluidPage(
               $(idBar).css("width", "0%");
               });
   '),
+  #Handle alert messages
+  singleton(
+    tags$head(tags$script(src = "alert-handler.js"))
+  ),
   # Application title
   titlePanel("Group Pairwise Analysis"),
 

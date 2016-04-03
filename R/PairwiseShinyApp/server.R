@@ -157,6 +157,9 @@ shinyServer(function(input, output, cD, session) {
     file.remove(uploadedFile)
     update_uis(input, session)
     session$sendCustomMessage(type = "resetFileInputHandler", "theFile")
+    parseErrs = getParsingErrors()
+    if (!is.na(parseErrs))
+      sendAlert(input = input, session = session, msg = parseErrs)
     #return(TRUE)    
   })
   gformUrlFx = eventReactive(input$gformUrlGo, {
@@ -223,4 +226,10 @@ update_better_vals <-function(input) {
   print(Much_Better_Value)
   print(input$muchBetter)
   print("Updating calcs")
+}
+
+sendAlert <- function(input, session, msg) {
+  session$sendCustomMessage(type = 'testmessage',
+                            message = msg)
+  
 }

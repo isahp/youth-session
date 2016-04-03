@@ -10,6 +10,7 @@ Voter_Demographics = list()
 Voter_Group_Participants = list()
 Group_Pairwises = list()
 Overall_Priorities = list()
+ERROR_MSGS_PARSE = list()
 #The Voting Table
 Voting_Symbolic_String_Values = c(">>" = -Symbolic_Much_Better_Value, 
                          ">"= -Symbolic_Better_Value, 
@@ -92,7 +93,7 @@ get_vote_from_sym <- function(val) {
     stop(paste("Unknown symbolic vote ", str(val)))
   }
 }
-get_pairwise_from_votes <- function(a_df, listOfNames, use_symbolic_vote = FALSE) {
+get_pairwise_from_votes <- function(a_df, listOfNames, use_symbolic_vote = FALSE, sheet_name = "Unknown") {
   size <- length(listOfNames)
   rval <- matrix(nrow=size, ncol=size, dimnames = list(listOfNames, listOfNames))
   #Init to zero
@@ -111,11 +112,11 @@ get_pairwise_from_votes <- function(a_df, listOfNames, use_symbolic_vote = FALSE
         stop(paste("Row ", rowName, "does not exist"))
       if (is.na(colIndex))
         stop(paste("Col ", colName, "does not exist"))
-      rval[rowIndex, colIndex] = string_vote_value(a_df[entry, 2], use_symbolic_vote)
+      rval[rowIndex, colIndex] = string_vote_value(a_df[entry, 2], use_symbolic_vote, rowName, colName, sheet_name)
       if (use_symbolic_vote)
-        rval[colIndex, rowIndex] = -string_vote_value(a_df[entry, 2], use_symbolic_vote)
+        rval[colIndex, rowIndex] = -string_vote_value(a_df[entry, 2], use_symbolic_vote, rowName, colName, sheet_name)
       else
-        rval[colIndex, rowIndex] = 1/string_vote_value(a_df[entry, 2], use_symbolic_vote)
+        rval[colIndex, rowIndex] = 1/string_vote_value(a_df[entry, 2], use_symbolic_vote, rowName, colName, sheet_name)
     }
   }
   return(rval)
@@ -125,7 +126,7 @@ get_allpairwise_from_votes <- function(list_of_dfs, list_of_names, use_symbolic 
   rval = list()
   for(df_name in names(list_of_dfs)) {
     a_df = list_of_dfs[[df_name]]
-    rval[[df_name]] = get_pairwise_from_votes(a_df, list_of_names, use_symbolic)
+    rval[[df_name]] = get_pairwise_from_votes(a_df, list_of_names, use_symbolic, df_name)
   }
   return(rval)
 }
@@ -143,10 +144,24 @@ get_allpairwise_from_sym <- function(list_syms) {
   return(rval)
 }
 
-string_vote_value <- function(sVote, use_symbolic_value = FALSE) {
+string_vote_value <- function(sVote, use_symbolic_value = FALSE
+                              , rowName, colName, sheet_name) {
   theNames = names(Voting_String_Values)
   if (!(sVote %in% theNames)) {
-    stop(paste0("Vote value '", sVote, "' is unknown"))
+    printVote = sVote
+    if (is.na(printVote))
+      printVote = ""
+    msg = paste0("In ", sheet_name, " vote='", printVote, "' on ",rowName, 
+                 ", ", colName)
+    if (!(msg %in% ERROR_MSGS_PARSE)) {
+      newMsgs = append(ERROR_MSGS_PARSE, msg)
+      assign("ERROR_MSGS_PARSE", newMsgs, envir = .GlobalEnv)
+    }
+    if (use_symbolic_value) {
+      return(Symbolic_Equals_Value)
+    } else {
+      return(Voting_String_Values[["E"]])
+    }
   }
   rval = Voting_String_Values[[sVote]]
   if (use_symbolic_value) {
@@ -195,8 +210,12 @@ get_group_participants <- function(voter_demo_df) {
 
 
 #Initialize some useful variables
-update_globals <- function(xlsxFile) {
-  assign("Vote_Dataframes", get_voter_spreadsheets(xlsxFile), envir = .GlobalEnv)
+update_globals <- function(xlsxFile, type = "xlsx") {
+  if (type == "xlsx") {
+    assign("Vote_Dataframes", get_voter_spreadsheets(xlsxFile), envir = .GlobalEnv)
+  } else if (type == "gsheet") {
+    
+  }
   glset_all_alts(get_allnames_from_dataframes(Vote_Dataframes))
   glset_vote_pairwises(get_allpairwise_from_votes(Vote_Dataframes, All_Alts))
   glset_vote_sym_pairwises(get_allpairwise_from_votes(Vote_Dataframes, All_Alts, use_symbolic = TRUE))
@@ -224,4 +243,25 @@ update_better_vote_change <- function() {
   #print(Group_Priorities)
   print(Vote_Sym_Pairwises)
   #print(Voter_Group_Participants)
+}
+
+
+getParsingErrors <- function(maxNumbErrs = 6, doClear = TRUE) {
+  errs = ERROR_MSGS_PARSE
+  if (length(errs) == 0) {
+    #No Errors
+    return(NA)
+  } else {
+    if (length(errs) > maxNumbErrs) {
+      errs = head(errs, n = maxNumbErrs)
+      errs = append(errs, "...")
+    }
+    title = "Problems with file, assuming equal votes there:"
+    fullList = append(errs, title, after = 0)
+    fullList = append(fullList, list(sep="\n"))
+    msg = do.call(paste, fullList)
+    if (doClear)
+      assign("ERROR_MSGS_PARSE", list(), envir = .GlobalEnv)
+    return(msg)
+  }
 }
