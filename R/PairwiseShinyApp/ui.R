@@ -43,7 +43,7 @@ shinyUI(fluidPage(
     tags$head(tags$script(src = "alert-handler.js"))
   ),
   # Application title
-  titlePanel("Group Pairwise Analysis"),
+  titlePanel("SimpleAHP Web App"),
 
   # Sidebar with a slider input for number of bins
   sidebarLayout(
