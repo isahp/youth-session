@@ -199,6 +199,10 @@ shinyServer(function(input, output, cD, session) {
 })
 
 update_uis <- function(input, session) {
+  groupNames = names(Voter_Group_Participants)
+  if (length(groupNames) == 0) {
+    groupNames = c('')
+  }
   updateSelectInput(session = session,
                     inputId = "oneUser",
                     choices = Voters)
@@ -207,7 +211,7 @@ update_uis <- function(input, session) {
                     choices = Voters)
   updateSelectInput(session = session,
                     inputId = "groups",
-                    choices = names(Voter_Group_Participants))
+                    choices = groupNames)
   #print(names(Voter_Group_Participants))
 }
 
