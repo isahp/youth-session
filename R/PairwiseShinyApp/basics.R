@@ -79,7 +79,6 @@ get_demographic_table_gs <- function(url) {
     a_df = gs_read(ginfo, ws = infoIndex, col_names = TRUE)
     rownames(a_df) <- a_df[[1]]
     a_df[[1]]<-NULL
-    View(a_df)
     for(col in 1:ncol(a_df)) {
       if ("character" %in% class(a_df[[col]])) {
         a_df[[col]] = as.factor(a_df[[col]])
