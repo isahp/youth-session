@@ -59,6 +59,10 @@ get_demographic_table <- function(xlsxFile = Input_Votes_File) {
     for(col in 1:ncol(a_df)) {
       if ("character" %in% class(a_df[[col]])) {
         a_df[[col]] = as.factor(a_df[[col]])
+      } else if ("integer" %in% class(a_df[[col]])) {
+        a_df[[col]] = as.factor(a_df[[col]])
+      } else if (all(a_df[[col]] == as.integer(a_df[[col]]))) {
+        a_df[[col]] = as.factor(a_df[[col]])
       }
     }
     return(a_df)
@@ -71,9 +75,17 @@ get_demographic_table_gs <- function(url) {
   ginfo = gs_url(url)
   sheetNames = gs_ws_ls(ginfo)
   if ("info" %in% sheetNames) {
-    a_df = gs_read(ginfo, sheet="info", col_names = TRUE)
+    infoIndex = match("info", sheetNames)
+    a_df = gs_read(ginfo, ws = infoIndex, col_names = TRUE)
+    rownames(a_df) <- a_df[[1]]
+    a_df[[1]]<-NULL
+    View(a_df)
     for(col in 1:ncol(a_df)) {
       if ("character" %in% class(a_df[[col]])) {
+        a_df[[col]] = as.factor(a_df[[col]])
+      } else if ("integer" %in% class(a_df[[col]])) {
+        a_df[[col]] = as.factor(a_df[[col]])
+      } else if (all(a_df[[col]] == as.integer(a_df[[col]]))) {
         a_df[[col]] = as.factor(a_df[[col]])
       }
     }
