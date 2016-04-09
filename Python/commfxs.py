@@ -90,13 +90,13 @@ def get_altnames(xlsxfile):
     firstcol = [sheet.cell(row = i, column = 1).value for i in range(1, nrows)]
     thirdcol = [sheet.cell(row = i, column = 3).value for i in range(1, nrows)]
 
-    rval = list([])
-    for row in range(1, nrows):
+    rval = list()
+    for row in range(0, len(firstcol)):
         if thirdcol[row] != None:
-            if firstcol[row] not in rval:
-                rval = rval.append(firstcol[row])
-    print firstcol
-    print thirdcol
+            if (firstcol[row] != None) and (firstcol[row] not in rval):
+                rval.append(firstcol[row])
+            if (thirdcol[row] not in rval):
+                rval.append(thirdcol[row])
     return rval
     
 def listtest(x):   
@@ -107,6 +107,7 @@ def listtest(x):
         return "number was found"
 
 
+print get_altnames('Areas.xlsx')
 print listtest(6)
 
 
