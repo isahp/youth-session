@@ -6,14 +6,14 @@ Created on Feb 23, 2016
 
 from openpyxl import load_workbook
 import numpy as np
+from _sqlite3 import Row
 
-wb = load_workbook(filename = 'Areas.xlsx')
+#wb = load_workbook(filename = 'Areas.xlsx')
 
-sheet = wb.get_sheet_by_name('Sarah')
+#sheet = wb.get_sheet_by_name('Sarah')
+#type(sheet)
 
-type(sheet)
-
-d = [sheet.cell(row = i, column = 2).value for i in range(1, 7)]
+#d = [sheet.cell(row = i, column = 2).value for i in range(1, 7)]
 
 
 def close_enough(nextVal, currentVal, error = 1e-7):
@@ -39,11 +39,15 @@ def calc(x):
     else:
         return("Error, unknown value "+ x)
 
-def fullCalc(x):
-    return Largest_eigen(outMat(x))
+def single_stats(fname, sheetname, bars = False):
+    if bars:
+        return "I should really do bars"
+    else:
+        return Largest_eigen(outMat(fname, sheetname))
 
 
-def outMat(x):
+def outMat(fname, x):
+    wb = load_workbook(filename = fname)
     xsheet = wb.get_sheet_by_name(x)
     type(xsheet)
     f = [xsheet.cell(row = i, column = 2).value for i in range(1, 7)]
@@ -78,6 +82,35 @@ def Largest_eigen(x, error = 1e-7):
         currentVal = nextVal
     return currentVal
 
-print fullCalc("Drew")
+def get_altnames(xlsxfile):
+    wb = load_workbook(filename = xlsxfile)
+    firstsheet = wb.get_sheet_names()[0]
+    sheet = wb.get_sheet_by_name(firstsheet)
+    nrows = sheet.max_row
+    firstcol = [sheet.cell(row = i, column = 1).value for i in range(1, nrows)]
+    thirdcol = [sheet.cell(row = i, column = 3).value for i in range(1, nrows)]
+
+    rval = list([])
+    for row in range(1, nrows):
+        if thirdcol[row] != None:
+            if firstcol[row] not in rval:
+                rval = rval.append(firstcol[row])
+    print firstcol
+    print thirdcol
+    return rval
+    
+def listtest(x):   
+    list1 = list([1, 2, 5, 6, 9])
+    if x not in list1:
+        return "number not found"
+    else:
+        return "number was found"
 
 
+print listtest(6)
+
+
+
+
+
+    
