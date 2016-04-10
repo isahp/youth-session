@@ -43,12 +43,12 @@ def single_stats(fname, sheetname, bars = False):
     if bars:
         return "I should really do bars"
     else:
-        return Largest_eigen(outMat(fname, sheetname))
+        return Largest_eigen(getMatrix(fname, sheetname))
 
 
-def outMat(fname, x):
+def outMat(fname, sheetName):
     wb = load_workbook(filename = fname)
-    xsheet = wb.get_sheet_by_name(x)
+    xsheet = wb.get_sheet_by_name(sheetName)
     type(xsheet)
     f = [xsheet.cell(row = i, column = 2).value for i in range(1, 7)]
     outputArray = np.array([calc(j) for j in f])
@@ -107,11 +107,41 @@ def listtest(x):
         return "number was found"
 
 
-print get_altnames('Areas.xlsx')
-print listtest(6)
+#print get_altnames('Areas.xlsx')
+#print listtest(6)
 
-
-
-
-
-    
+def getMatrix(fname, sheetName):
+    #First we need to know the alternatives in this sheet
+    altnames = get_altnames(fname)
+    #The number of alternatives is the size of the return matrix
+    matSize = len(altnames)
+    #The return matrix starts off with 1's on the diagonal, and zeroes elsewhere
+    returnMatrix = np.identity(matSize)
+    #Load up the excel spreadsheet and get the actual sheet
+    wb = load_workbook(filename = fname)
+    xsheet = wb.get_sheet_by_name(sheetName)
+    #Loop over the rows in this sheet
+    for row in range(xsheet.max_row):
+        #Get the first column val, which is the row of the comparison
+        val1 = xsheet.cell(row = row+1, column = 1).value
+        #Get the second column val, which is the value of the comparison
+        val2 = xsheet.cell(row = row+1, column = 2).value
+        #Get the third column value, which is the COLUMN of the comparison
+        val3 = xsheet.cell(row = row+1, column = 3).value
+        #If third column value == None, that means this wasn't a pairwise comparison entry
+        #Maybe it was a demographic bit (FavColor)
+        if (val3 != None):
+            #Get the index of the alt name in the list of altnames
+            #This tells us where to place the vote in the resulting matrix
+            rowIndex = altnames.index(val1)
+            colIndex = altnames.index(val3)
+            #Get the numeric value of the vote from the stringy vote
+            voteValue = calc(val2)
+            #Lastly place the vote in, and it's reciprocal on the other side
+            #of the diagonal
+            returnMatrix[rowIndex,colIndex] = voteValue
+            returnMatrix[colIndex, rowIndex] = 1./voteValue
+#            returnMatrix[index3, index1] = 
+    return returnMatrix
+        
+print getMatrix('Areas.xlsx', 'Sarah')
