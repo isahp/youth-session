@@ -45,6 +45,18 @@ def single_stats(fname, sheetname, bars = False):
     else:
         return Largest_eigen(getMatrix(fname, sheetname))
 
+def group_stats(xlsxFname, listOfSheetnames, bars = False):
+    if bars:
+        barVals = group_stats(xlsxFname, listOfSheetnames, bars = False)
+        # Do nifty stuff like in tutorial to create plotly chart
+        return "I should do bars, but I haven't yet"
+    else:
+        listOfMatrices = []
+        for sheetName in listOfSheetnames:
+            theMatrix = getMatrix(xlsxFname, sheetName)
+            listOfMatrices.append(theMatrix)
+        geomAvg = geometric_avg(listOfMatrices)
+        return Largest_eigen(geomAvg)
 
 def outMat(fname, sheetName):
     wb = load_workbook(filename = fname)
@@ -143,5 +155,24 @@ def getMatrix(fname, sheetName):
             returnMatrix[colIndex, rowIndex] = 1./voteValue
 #            returnMatrix[index3, index1] = 
     return returnMatrix
-        
-print getMatrix('Areas.xlsx', 'Sarah')
+
+def geometric_avg(listOfMats):
+    #Create rval
+    rval = np.zeros_like(listOfMats[0])
+    nrows = rval.shape[0]
+    ncols = rval.shape[1]
+    for row in range(nrows):
+        for col in range(ncols):
+            val = 1
+            count = 0
+            for mat in listOfMats:
+                if mat[row, col]!=0:
+                    val *= mat[row,col]
+                    count+=1
+            if count != 0:
+                val = pow(val, 1.0/count)
+            #Finally have the value, put it in
+            rval[row,col] = val
+    return rval
+print group_stats('Areas.xlsx', ['Sarah', 'Drew'])       
+#print getMatrix('Areas.xlsx', 'Sarah')
