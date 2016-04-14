@@ -80,7 +80,38 @@ geometric_avg <- function(avec) {
   rval = rval ^ (1/length(bvec))
   return(rval)
 }
-eigen_largest <- function(matrixOrList, maxCount = NA, maxError = 1e-7, return.eigenvalue = FALSE, idealize = TRUE) {
+
+
+#' Harker fix a square matrix
+#'
+#' Applies Harker's fix to a pairwise comparison matrix.  For every 0 in a row, the
+#' diagonal entry is increased by 1.
+#' @param matrix 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+harker_fix <- function(matrix) {
+  stopifnot("matrix" %in% class(matrix), nrow(matrix) == ncol(matrix))
+  size = nrow(matrix)
+  for(row in 1:size) {
+    #Make sure the diagonal is already 1
+    #So the successive calls to harker fix don't change the matrix
+    matrix[row,row] = 1
+    for(col in 1:size) {
+      if (col != row) {
+        if (matrix[row,col] == 0) {
+          #Increment the diagonal entry by 1
+          matrix[row,row] = matrix[row,row]+1
+        }
+      }
+    }
+  }
+  matrix
+}
+
+eigen_largest <- function(matrixOrList, maxCount = NA, maxError = 1e-9, return.eigenvalue = FALSE, idealize = TRUE, harker.fix = TRUE) {
   #If we have a group, take group average first
   if ("list" %in% class(matrixOrList)) {
     matrix = pairwise_group_average(matrixOrList)
@@ -88,6 +119,9 @@ eigen_largest <- function(matrixOrList, maxCount = NA, maxError = 1e-7, return.e
     matrix = matrixOrList
   }
   stopifnot("matrix" %in% class(matrix), nrow(matrix) == ncol(matrix))
+  if (harker.fix) {
+    matrix = harker_fix(matrix)
+  }
   size = nrow(matrix)
   curVec <- vector(mode = "numeric", length = size)
   curVec[] = 1.0/size
