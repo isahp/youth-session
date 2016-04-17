@@ -1,8 +1,32 @@
 Better_Value = 3.0
 Much_Better_Value = 9.0
-Symbolic_Better_Value = 1
-Symbolic_Much_Better_Value = 2
-Symbolic_Equals_Value = 0
+Symbolic_Equals_Value = -1
+Symbolic_Better_Value = -2
+Symbolic_Much_Better_Value = -3
+Symbolic_Better_Value_Opposite = -4
+Symbolic_Much_Better_Value_Opposite = -5
+opposite_sym_vote <- function(vote) {
+  if (vote == Symbolic_Much_Better_Value_Opposite) {
+    return(Symbolic_Much_Better_Value)
+  } else if (vote == Symbolic_Better_Value_Opposite) {
+    return(Symbolic_Better_Value)
+  } else if (vote == Symbolic_Much_Better_Value) {
+    return(Symbolic_Much_Better_Value_Opposite)
+  } else if (vote == Symbolic_Better_Value) {
+    return(Symbolic_Better_Value_Opposite) 
+  } else if (vote == Symbolic_Equals_Value) {
+    return(Symbolic_Equals_Value)
+  } else if (vote >= 0) {
+    #This is a pure numerical vote, return the oppositie
+    if (vote == 0) {
+      return(0)
+    } else {
+      return(1.0/vote)
+    }
+  } else {
+    stop(paste0("Unknown sym vote to do the opposite of ", str(vote)))
+  }
+}
 Input_Votes_File = "votes.xlsx"
 
 
