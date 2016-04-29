@@ -3,10 +3,11 @@ Created on Feb 23, 2016
 
 @author: Devin
 '''
-
+from plotly.offline import plot
+from plotly.offline import download_plotlyjs, init_notebook_mode, iplot
+import plotly.graph_objs as go
 from openpyxl import load_workbook
 import numpy as np
-from _sqlite3 import Row
 
 #wb = load_workbook(filename = 'Areas.xlsx')
 
@@ -25,50 +26,31 @@ def close_enough(nextVal, currentVal, error = 1e-7):
     else:
         return False
 
-def calc(x):
+def calc(x, better = 3.0, muchbetter = 9.0):
     if(x == ">"):
-        return 3
+        return 1./better
     elif(x == ">>"):
-        return 9
+        return 1./muchbetter
     elif(x == "<"):
-        return 1./3
+        return better
     elif(x == "<<"):
-        return 1./9
+        return muchbetter
     elif(x == "E"):
         return 1
     else:
         return("Error, unknown value "+ x)
 
-def single_stats(fname, sheetname, bars = False):
+def single_stats(fname, sheetname, bars = False, better = 3,  muchbetter = 9):
     if bars:
-        return "I should really do bars"
+        eigen = single_stats(fname, sheetname, bars = False, better = better, muchbetter = muchbetter)
+        altnames = get_altnames("Areas.xlsx")
+        data = go.Bar(x=altnames, y=eigen)
+        layout = go.Layout(title = sheetname+"'s Priorities")
+        return iplot(go.Figure(data = go.Data([data]), layout = layout))
+
     else:
-        return Largest_eigen(getMatrix(fname, sheetname))
+        return Largest_eigen(getMatrix(fname, sheetname, better, muchbetter))
 
-
-def outMat(fname, sheetName):
-    wb = load_workbook(filename = fname)
-    xsheet = wb.get_sheet_by_name(sheetName)
-    type(xsheet)
-    f = [xsheet.cell(row = i, column = 2).value for i in range(1, 7)]
-    outputArray = np.array([calc(j) for j in f])
-    ab = outputArray[0]
-    bc = outputArray[1]
-    cd = outputArray[2]
-    ac = outputArray[3]
-    bd = outputArray[4]
-    ad = outputArray[5]
-    ba = 1./outputArray[0]
-    cb = 1./outputArray[1]
-    dc = 1./outputArray[2]
-    ca = 1./outputArray[3]
-    db = 1./outputArray[4]
-    da = 1./outputArray[5]
-
-    return np.array([[1, ab, ac, ad],
-                     [ba, 1 , bc,bd],
-                     [ca,  cb, 1, cd],
-                     [da, db, dc, 1]])
 
 def Largest_eigen(x, error = 1e-7):
     size = x.shape[0]
@@ -110,7 +92,7 @@ def listtest(x):
 #print get_altnames('Areas.xlsx')
 #print listtest(6)
 
-def getMatrix(fname, sheetName):
+def getMatrix(fname, sheetName, better = 3, muchbetter = 9):
     #First we need to know the alternatives in this sheet
     altnames = get_altnames(fname)
     #The number of alternatives is the size of the return matrix
@@ -136,12 +118,18 @@ def getMatrix(fname, sheetName):
             rowIndex = altnames.index(val1)
             colIndex = altnames.index(val3)
             #Get the numeric value of the vote from the stringy vote
-            voteValue = calc(val2)
+            voteValue = calc(val2, better, muchbetter)
             #Lastly place the vote in, and it's reciprocal on the other side
             #of the diagonal
             returnMatrix[rowIndex,colIndex] = voteValue
             returnMatrix[colIndex, rowIndex] = 1./voteValue
 #            returnMatrix[index3, index1] = 
     return returnMatrix
-        
-print getMatrix('Areas.xlsx', 'Sarah')
+
+
+#def getBars(stats, barnames, title, xlsxfile, sheetname):
+    #altnames = get_altnames(xlsxfile)
+    #data = go.Bar(x= altnames, y= single_stats(xlsxfile, sheetname))
+    ##layout = go.Layout(title = sheetname+ "'s Priorities")
+    #iplot(go.Figure(data = go.Data([data]), layout = layout))
+    
