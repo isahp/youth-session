@@ -20,6 +20,7 @@ Text_To_Sym_Value_Map = c("much better"=2,
                           "equal" = 0, "same" = 0)
 
 glset_googleform_df <- function(g_df) {
+  g_df = googleform_handle_diff_formats(g_df)
   glset_pairwise_googleform_df(g_df)
   glset_vote_priorities(lapply(Vote_Pairwises, FUN=function(x) eigen_largest(x)))
   glset_voters(names(Vote_Priorities))
@@ -107,7 +108,7 @@ get_pairwise_from_google_row <- function(g_row, alt_names, pw_cols, use_symbolic
       if (!use_symbolic)
         rval[alts[2], alts[1]] = 1/num_vote
       else
-        rval[alts[2], alts[1]] = -num_vote
+        rval[alts[2], alts[1]] = opposite_sym_vote(num_vote)
     }
   }
   return(rval)
@@ -144,6 +145,13 @@ vote_text_to_value <- function(text, use_symbolic = FALSE) {
         return(Text_To_Sym_Value_Map[[pattern]])
     }
   }
+  #Okay not a >>, >, <<, <, E type vote, try pure numerical
+  numVote = string_fraction_to_val(text)
+  if (!is.na(numVote)) {
+    #Okay, it was numeric, let's return it
+    return(numVote)
+  }
+  #Could not do this one, just give up
   return(NA)
 }
 
@@ -167,9 +175,90 @@ get_google_vote_val <- function(g_vote, dom_alt, rec_alt, use_symbolic = FALSE) 
     if (grepl(dom_alt, g_vote, fixed = TRUE)) {
       return(vote_text_to_value(g_vote, use_symbolic = TRUE))
     } else if (grepl(rec_alt, g_vote, fixed = TRUE)) {
-      return(-vote_text_to_value(g_vote, use_symbolic = TRUE))
+      return(opposite_sym_vote(vote_text_to_value(g_vote, use_symbolic = TRUE)))
     } else {
       return(vote_text_to_value(g_vote, use_symbolic = TRUE))
     }
   }
+}
+
+googleform_handle_diff_formats <- function(g_df) {
+  thecolNames = colnames(g_df)
+  if (anyDuplicated(thecolNames) <= 0) {
+    #No duplicated columns, so this is standard format
+    return(g_df)
+  } else {
+    #We have some A versus B questions with two parts, which is better, and by how much
+    #For each of these, we have to coalesce them into a single column.
+    #So I'm going to loop over columns, see if that particular column is duplicated
+    #And if so, coalesce it into a new column
+    deduped = g_df
+    handledCols = list()
+    for(colname in colnames(g_df)) {
+      colNameAt = which(thecolNames == colname)
+      if (!(colname %in% handledCols) &&
+        (length(colNameAt) > 1) && (grepl("versus", colname, ignore.case = TRUE))) {
+        #This column name occurs more than once.  Now we need to figure out which
+        #column is the "A is better" column and which is the "A is better by 6" column
+        
+        #We only consider the first and second column
+        firstCol = colNameAt[1]
+        secondCol = colNameAt[2]
+        coalescedCol = googleform_dominance_plus_vote_to_vote(g_df, colname, firstCol, secondCol)
+        #Okay remove these dupes
+        deduped[,colname] = NULL
+        #Add in the coalesced
+        deduped[,colname] = coalescedCol
+        #Don't forget to note we have taken care of this column.
+        handledCols[length(handledCols)+1] = colname
+      }
+      
+    }
+  }
+  deduped
+}
+
+
+googleform_dominance_plus_vote_to_vote <- function(g_df, colname, firstColIndex, secondColIndex) {
+  alts = strsplit(colname, "versus", fixed=TRUE)[[1]]
+  altA = trimws(alts[1])
+  altB = trimws(alts[2])
+  firstCol = g_df[,firstColIndex]
+  secondCol = g_df[,secondColIndex]
+  #Which column is the dominance one?  It should have the words altA, altB, or "equals" in it
+  if (is_dominance_col(firstCol, altA, altB)) {
+    domCol = firstCol
+    numberCol = secondCol
+  } else if (is_dominance_col(secondCol, altA, altB)) {
+    domCol = secondCol
+    numberCol = firstCol
+  } else {
+    stop("Could not find dominance column")
+  }
+#   print("First Column:")
+#   print(firstCol)
+#   print("Second Column:")
+#   print(secondCol)
+#   print("The col name:")
+#   print(colname)
+#   print("AltA:")
+#   print(altA)
+#   print("AltB:")
+#   print(altB)
+  rval = numberCol
+  for(i in 1:length(rval)) {
+    if (grepl(altB, domCol[[i]])) {
+      #Inverted vote, i.e. altB was better.
+      rval[i] = 1.0 / string_fraction_to_val(rval[i])
+    }
+  }
+  print("Vote Column:")
+  print(rval)
+  return(rval)
+}
+
+is_dominance_col <- function(col, altA, altB) {
+  any(grepl(altA, col, fixed = TRUE)) ||
+    any(grepl(altB, col, fixed = TRUE))||
+    any(grepl("equal", col, fixed = TRUE))
 }

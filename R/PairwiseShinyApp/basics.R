@@ -13,8 +13,8 @@ Group_Pairwises = list()
 Overall_Priorities = list()
 ERROR_MSGS_PARSE = list()
 #The Voting Table
-Voting_Symbolic_String_Values = c(">>" = -Symbolic_Much_Better_Value, 
-                         ">"= -Symbolic_Better_Value, 
+Voting_Symbolic_String_Values = c(">>" = Symbolic_Much_Better_Value_Opposite, 
+                         ">"= Symbolic_Better_Value_Opposite, 
                          "E"=Symbolic_Equals_Value, 
                          "e"=Symbolic_Equals_Value, 
                          "<"=Symbolic_Better_Value, 
@@ -122,17 +122,21 @@ get_pairwise_from_sym <- function(sym) {
 }
 
 get_vote_from_sym <- function(val) {
-  if (val == 0) {
+  if (val == Symbolic_Equals_Value) {
     return(1)
-  } else if (val == 1) {
+  } else if (val == Symbolic_Better_Value) {
     return(Better_Value)
-  } else if (val == 2) {
+  } else if (val == Symbolic_Much_Better_Value) {
     return(Much_Better_Value)
-  } else if (val == -1) {
+  } else if (val == Symbolic_Better_Value_Opposite) {
     return(1./Better_Value)
-  } else if (val == -2) {
+  } else if (val == Symbolic_Much_Better_Value_Opposite) {
     return(1./Much_Better_Value)
+  } else if (val >= 0) {
+    #This is just a pure numeric vote, return it
+    return(val)
   } else {
+    print(paste0("I hate this shiiiiiiii ", val))
     stop(paste("Unknown symbolic vote ", str(val)))
   }
 }
@@ -159,7 +163,7 @@ get_pairwise_from_votes <- function(a_df, listOfNames, use_symbolic_vote = FALSE
         stop(paste("Col ", colName, "does not exist"))
       rval[rowIndex, colIndex] = string_vote_value(val, use_symbolic_vote, rowName, colName, sheet_name)
       if (use_symbolic_vote)
-        rval[colIndex, rowIndex] = -string_vote_value(val, use_symbolic_vote, rowName, colName, sheet_name)
+        rval[colIndex, rowIndex] = opposite_sym_vote(string_vote_value(val, use_symbolic_vote, rowName, colName, sheet_name))
       else
         rval[colIndex, rowIndex] = 1/string_vote_value(val, use_symbolic_vote, rowName, colName, sheet_name)
     }
@@ -192,31 +196,70 @@ get_allpairwise_from_sym <- function(list_syms) {
 string_vote_value <- function(sVote, use_symbolic_value = FALSE
                               , rowName, colName, sheet_name) {
   theNames = names(Voting_String_Values)
-  if (!(sVote %in% theNames)) {
-    printVote = sVote
-    if (is.na(printVote))
-      printVote = ""
-    msg = paste0("In ", sheet_name, " vote='", printVote, "' on ",rowName, 
-                 ", ", colName)
-    if (!(msg %in% ERROR_MSGS_PARSE)) {
-      newMsgs = append(ERROR_MSGS_PARSE, msg)
-      assign("ERROR_MSGS_PARSE", newMsgs, envir = .GlobalEnv)
-    }
-    print(msg)
+  if (sVote %in% theNames) {
+    #A symbolic vote
+    rval = Voting_String_Values[[sVote]]
     if (use_symbolic_value) {
-      return(Symbolic_Equals_Value)
-    } else {
-      return(Voting_String_Values[["E"]])
+      rval = Voting_Symbolic_String_Values[[sVote]]
+    }
+    return(rval)
+  } else if (is.numeric(sVote)) {
+    #Pure numeric vote, no interprettation needed, just return it
+    return(sVote)
+  } else if (!is.na(suppressWarnings(as.numeric(sVote)))) {
+    #Pure numerical vote, but as a string, convert to a numeric type
+    return(as.numeric(sVote))
+  } else if (is.character(sVote)) {
+    #We have a stringy vote that is not a pure #, it might be a fraction, ie. 2/3
+    print(paste0("Have stringy vote=",sVote))
+    rval = string_fraction_to_val(sVote)
+    if (!is.na(rval)) {
+      return(rval)
     }
   }
-  #print(paste0("Trying vote ", sVote, " class is ", class(sVote)))
-  rval = Voting_String_Values[[sVote]]
-  if (use_symbolic_value) {
-    rval = Voting_Symbolic_String_Values[[sVote]]
+  #If we make it here, couldn't parse
+  printVote = sVote
+  if (is.na(printVote))
+    printVote = ""
+  msg = paste0("In ", sheet_name, " vote='", printVote, "' on ",rowName, 
+               ", ", colName)
+  if (!(msg %in% ERROR_MSGS_PARSE)) {
+    newMsgs = append(ERROR_MSGS_PARSE, msg)
+    assign("ERROR_MSGS_PARSE", newMsgs, envir = .GlobalEnv)
   }
-  if (is.na(rval))
-    stop(paste("Unknown vote ", sVote))
-  return(rval)
+  print(msg)
+  if (use_symbolic_value) {
+    return(Symbolic_Equals_Value)
+  } else {
+    return(Voting_String_Values[["E"]])
+  }
+}
+
+string_fraction_to_val <- function(sVal) {
+  rval = suppressWarnings(as.numeric(sVal))
+  if (!is.na(rval)) {
+    #Had a numeric value, no fraction, just return that
+    return(rval)
+  }
+  if (grepl("/", sVal, fixed = TRUE)) {
+    #Had fraction sign, split and get num/denom and try to parse
+    #First remove any quotes
+    sVal = gsub('"', '', sVal)
+    sVal = gsub("'", '', sVal)
+    vals = strsplit(sVal, "/")[[1]]
+    num = vals[[1]]
+    denom = vals[[2]]
+    numVal = suppressWarnings(as.numeric(num))
+    denomVal = suppressWarnings(as.numeric(denom))
+    if (is.na(numVal) || is.na(denomVal)) {
+      return(NA)
+    } else {
+      return(numVal / denomVal)
+    }
+  } else {
+    #Not a fraction
+    return(NA)
+  }
 }
 get_names_from_dataframe <- function(the_df) {
   #First we need to get the index names
