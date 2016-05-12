@@ -163,5 +163,5 @@ def geometric_avg(listOfMats):
             #Finally have the value, put it in
             rval[row,col] = val
     return rval
-print group_stats('Areas.xlsx', ['Sarah', 'Drew'])       
+print(group_stats('Areas.xlsx', ['Sarah', 'Drew']))  
 #print getMatrix('Areas.xlsx', 'Sarah')
