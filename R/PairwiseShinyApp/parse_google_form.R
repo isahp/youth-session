@@ -250,7 +250,7 @@ googleform_dominance_plus_vote_to_vote <- function(g_df, colname, firstColIndex,
     if (grepl(altB, domCol[[i]])) {
       #Inverted vote, i.e. altB was better.
       rval[i] = 1.0 / string_fraction_to_val(rval[i])
-    } else if (grepl(altA, dom[[i]])) {
+    } else if (grepl(altA, domCol[[i]])) {
       # Regular vote
       rval[i] = string_fraction_to_val(rval[i])
     } else {
