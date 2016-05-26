@@ -10,14 +10,15 @@
 #' of the voter.
 #' 
 
-source('set-globals.R')
+source("basics.R")
 #'If a vote string matches the given name, we get that value
 Text_To_Value_Map = c("much better"=Much_Better_Value, 
                       "better"=Better_Value, 
                       "equal" = 1, "same" = 1)
-Text_To_Sym_Value_Map = c("much better"=2,
-                          "better"=1,
-                          "equal" = 0, "same" = 0)
+Text_To_Sym_Value_Map = c("much better"=Symbolic_Much_Better_Value,
+                          "better"=Symbolic_Better_Value,
+                          "equal" = Symbolic_Equals_Value, 
+                          "same" = Symbolic_Equals_Value)
 
 glset_googleform_df <- function(g_df) {
   g_df = googleform_handle_diff_formats(g_df)
@@ -67,7 +68,7 @@ glset_pairwise_googleform_df <- function(g_df) {
   glset_vote_sym_pairwises(list_of_sym_pws)
   #print(pw_cols)
   #print(alt_names)
-  print(list_of_sym_pws)
+  #print(list_of_sym_pws)
   return(rval)
 }
 
@@ -102,7 +103,7 @@ get_pairwise_from_google_row <- function(g_row, alt_names, pw_cols, use_symbolic
     alts = get_pairwise_cols_from_google_col(pw_col)
     string_vote = g_row[pw_col]
     num_vote = get_google_vote_val(string_vote, alts[[1]], alts[[2]], use_symbolic)
-    print(paste("working on col ", pw_col, " vote = ",string_vote, " num_vote = ", num_vote))
+    #print(paste("working on col ", pw_col, " vote = ",string_vote, " num_vote = ", num_vote, "use_symbolic=", use_symbolic))
     if (!is.na(num_vote)) {
       rval[alts[1], alts[2]] = num_vote
       if (!use_symbolic)
@@ -111,6 +112,8 @@ get_pairwise_from_google_row <- function(g_row, alt_names, pw_cols, use_symbolic
         rval[alts[2], alts[1]] = opposite_sym_vote(num_vote)
     }
   }
+  #print(paste("use_symbolic=", use_symbolic, " Return matrix follows:"))
+  #print(rval)
   return(rval)
 }
 get_pairwise_cols_from_google_col <- function(col_name) {
@@ -258,8 +261,8 @@ googleform_dominance_plus_vote_to_vote <- function(g_df, colname, firstColIndex,
       rval[i] = 1.0
     }
   }
-  print("Vote Column:")
-  print(rval)
+  #print("Vote Column:")
+  #print(rval)
   return(rval)
 }
 
