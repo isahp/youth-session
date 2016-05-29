@@ -244,6 +244,7 @@ init_if_needed <- function(input, session, clientData) {
 }
 
 update_better_vals <-function(input) {
+  assign("PRIORITIES_TYPE", input$priorityType, envir = .GlobalEnv)
   if (!is.numeric(input$better))
     return()
   else if (input$better < 1)
@@ -255,10 +256,10 @@ update_better_vals <-function(input) {
   glset_better_value(input$better)
   glset_much_better_value(input$muchBetter)
   update_better_vote_change()
-  print(Better_Value)
-  print(Much_Better_Value)
-  print(input$muchBetter)
-  print("Updating calcs")
+  #print(Better_Value)
+  #print(Much_Better_Value)
+  #print(input$muchBetter)
+  #print("Updating calcs")
 }
 
 sendAlert <- function(input, session, msg) {

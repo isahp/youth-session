@@ -1,3 +1,4 @@
+PRIORITIES_TYPE="eigen"
 Better_Value = 3.0
 Much_Better_Value = 9.0
 Symbolic_Equals_Value = -1

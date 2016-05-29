@@ -322,14 +322,24 @@ update_globals <- function(xlsxFile, type = "xlsx") {
   #print(Voter_Group_Participants)
 }
 
+priorities_wrapper = function(x) {
+  #print(PRIORITIES_TYPE)
+  if (PRIORITIES_TYPE == "eigen") {
+    return(eigen_largest(x))
+  } else if (PRIORITIES_TYPE == "bill") {
+    return(bpriorities(x))
+  } else {
+    return(eigen_largest(x))
+  }
+}
 update_better_vote_change <- function() {
   #print(Vote_Sym_Pairwises)
   glset_vote_pairwises(get_allpairwise_from_sym(Vote_Sym_Pairwises))
   #print(Vote_Pairwises)
-  glset_vote_priorities(lapply(Vote_Pairwises, FUN=function(x) eigen_largest(x)))
+  glset_vote_priorities(lapply(Vote_Pairwises, FUN=function(x) priorities_wrapper(x)))
   glset_group_pairwises(lapply(Voter_Group_Participants, FUN = function(x) Vote_Pairwises[x]))
-  glset_group_priorities(lapply(Group_Pairwises, FUN = function(x) eigen_largest(x)))
-  glset_overall_priorities(eigen_largest(Vote_Pairwises))
+  glset_group_priorities(lapply(Group_Pairwises, FUN = function(x) priorities_wrapper(x)))
+  glset_overall_priorities(priorities_wrapper(Vote_Pairwises))
   #print(Group_Priorities)
   #print(Vote_Sym_Pairwises)
   #print(Voter_Group_Participants)

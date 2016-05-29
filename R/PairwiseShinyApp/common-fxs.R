@@ -192,3 +192,71 @@ studentPrioritiesTable <- function(studentPriorities) {
   rval$Alt = factor(rval$Alt, levels = altNames)
   return(rval)
 }
+
+
+bpriorities <- function(matrixOrList, maxCount = NA, maxError = 1e-9, idealize = TRUE) {
+  #If we have a group, take group average first
+  if ("list" %in% class(matrixOrList)) {
+    matrix = pairwise_group_average(matrixOrList)
+  } else {
+    matrix = matrixOrList
+  }
+  stopifnot("matrix" %in% class(matrix), nrow(matrix) == ncol(matrix))
+  nextVec = bpriorities.matrix(matrix, maxCount = maxCount, maxError = maxError)
+    
+  if (idealize)
+    nextVec = nextVec/max(nextVec)
+  nextVec
+}
+
+geom_avg <- function(vals) {
+  rval=1.0
+  count = 0
+  for (val in vals) {
+    if (val != 0) {
+      rval = rval*val
+      count=count+1
+    }
+  }
+  if (count != 0) {
+    rval = rval^(1.0/count)
+  }
+  return(rval)
+}
+
+geom_avg_mat <- function(mat, coeffs = NA) {
+  size = nrow(mat)
+  rval = vector(mode="numeric", length=size)
+  rval[] = 1
+  for (row in 1:size) {
+    if (length(coeffs)==size && !any(is.na(coeffs))) {
+      theRow = mat[row,] * coeffs
+    } else {
+      theRow = mat[row,]
+    }
+    rval[row] = geom_avg(theRow)
+  }
+  return(rval)
+}
+
+
+bpriorities.matrix <- function(mat, maxCount=100, maxError = 1e-10) {
+  size = nrow(mat)
+  vec = vector(mode="numeric", length=size)
+  vec[] = 1
+  diff = 1
+  print("Doing Bill style priorities")
+  if (is.na(maxCount)) {
+    maxCount = size^4
+  }
+  for (theCounter in 1:maxCount) {
+    nextv = geom_avg_mat(mat, vec)
+    #nextv = nextv/max(nextv)
+    diff = max(abs(nextv/sum(nextv) - vec/sum(vec)))
+    vec = nextv
+    if (diff < maxError) {
+      break
+    }
+  }
+  return(vec/sum(vec))
+}
