@@ -63,7 +63,8 @@ shinyUI(fluidPage(
                  actionButton("gformUrlGo", label = "Update"))
       ),
       bsCollapsePanel(title="Advanced Options",
-                      radioButtons("priorityType", label="Priority Calc:", inline=TRUE,  choices=c("Eigen" = "eigen", "Bill" = "bill"))
+#                      radioButtons("priorityType", label="Priority Calc:", inline=TRUE,  choices=c("Eigen" = "eigen", "Bill" = "bill"))
+                      selectizeInput("priorityType", "Priority Calc", choices=c("Eigen" = "eigen", "Bill" = "bill", "Bill Power Weight"="billpw"), selected = "eigen")
                       ,sliderInput("better", "Better's numeric value:", min=1.1, max=9.0, step= 0.1, value = 3.0),
                       sliderInput("muchBetter", "Much better's numeric value:", min=1.1, max=9.0, step=0.1, value = 9.0)
       )

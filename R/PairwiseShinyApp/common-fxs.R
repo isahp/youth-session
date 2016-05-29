@@ -194,7 +194,7 @@ studentPrioritiesTable <- function(studentPriorities) {
 }
 
 
-bpriorities <- function(matrixOrList, maxCount = NA, maxError = 1e-9, idealize = TRUE) {
+bpriorities <- function(matrixOrList, powerWeight = FALSE, maxCount = NA, maxError = 1e-9, idealize = TRUE) {
   #If we have a group, take group average first
   if ("list" %in% class(matrixOrList)) {
     matrix = pairwise_group_average(matrixOrList)
@@ -202,45 +202,63 @@ bpriorities <- function(matrixOrList, maxCount = NA, maxError = 1e-9, idealize =
     matrix = matrixOrList
   }
   stopifnot("matrix" %in% class(matrix), nrow(matrix) == ncol(matrix))
-  nextVec = bpriorities.matrix(matrix, maxCount = maxCount, maxError = maxError)
+  nextVec = bpriorities.matrix(matrix, powerWeight = powerWeight, maxCount = maxCount, maxError = maxError)
     
   if (idealize)
     nextVec = nextVec/max(nextVec)
   nextVec
 }
 
-geom_avg <- function(vals) {
+geom_avg <- function(vals, weights = NA, powerWeight = FALSE) {
+  size = length(vals)
+  if (length(weights)==1 && is.na(weights)) {
+    weights = vector(mode="numeric", length=size)
+    weights[] = 1
+  }
   rval=1.0
-  count = 0
+  usedWeights = 0
+  usedCount = 0
+  count = 1
   for (val in vals) {
     if (val != 0) {
-      rval = rval*val
-      count=count+1
+      if (powerWeight) {
+        rval = rval*(val^weights[count])
+      } else {
+        rval = rval*val*weights[count]
+      }
+      usedWeights=usedWeights+weights[count]
+      usedCount = usedCount + 1
     }
+    count=count+1
   }
-  if (count != 0) {
-    rval = rval^(1.0/count)
+  if (powerWeight) {
+    if (usedWeights != 0) {
+      rval = rval^(1.0/usedWeights)
+    }
+  } else {
+    if (usedCount > 0) {
+      rval = rval^(1.0/usedCount)
+    }    
   }
   return(rval)
 }
 
-geom_avg_mat <- function(mat, coeffs = NA) {
+geom_avg_mat <- function(mat, coeffs = NA, powerWeight = FALSE) {
   size = nrow(mat)
   rval = vector(mode="numeric", length=size)
   rval[] = 1
+  if (length(coeffs)==1 && is.na(coeffs)) {
+    coeffs = rval
+  }
   for (row in 1:size) {
-    if (length(coeffs)==size && !any(is.na(coeffs))) {
-      theRow = mat[row,] * coeffs
-    } else {
-      theRow = mat[row,]
-    }
-    rval[row] = geom_avg(theRow)
+    theRow = mat[row,]
+    rval[row] = geom_avg(theRow, coeffs, powerWeight = powerWeight)
   }
   return(rval)
 }
 
 
-bpriorities.matrix <- function(mat, maxCount=100, maxError = 1e-10) {
+bpriorities.matrix <- function(mat, powerWeight = FALSE, maxCount=100, maxError = 1e-10) {
   size = nrow(mat)
   vec = vector(mode="numeric", length=size)
   vec[] = 1
@@ -250,9 +268,9 @@ bpriorities.matrix <- function(mat, maxCount=100, maxError = 1e-10) {
     maxCount = size^4
   }
   for (theCounter in 1:maxCount) {
-    nextv = geom_avg_mat(mat, vec)
+    nextv = geom_avg_mat(mat, vec, powerWeight = powerWeight)
     #nextv = nextv/max(nextv)
-    diff = max(abs(nextv/sum(nextv) - vec/sum(vec)))
+    diff = max(abs(nextv/max(nextv) - vec/max(vec)))
     vec = nextv
     if (diff < maxError) {
       break

@@ -328,6 +328,8 @@ priorities_wrapper = function(x) {
     return(eigen_largest(x))
   } else if (PRIORITIES_TYPE == "bill") {
     return(bpriorities(x))
+  } else if (PRIORITIES_TYPE == "billpw") {
+    return(bpriorities(x, powerWeight = TRUE))
   } else {
     return(eigen_largest(x))
   }
