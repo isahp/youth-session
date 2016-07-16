@@ -152,6 +152,10 @@ shinyServer(function(input, output, cD, session) {
     p
   })
   observe({
+    isDopple = input$isDoppleganger
+    assign("IS_DOPPLEGANGER", isDopple, .GlobalEnv)
+  })
+  observe({
     info = input$theFile
     if (is.null(info))
       return(NULL)
@@ -244,6 +248,7 @@ init_if_needed <- function(input, session, clientData) {
 }
 
 update_better_vals <-function(input) {
+  stuff = input$isDoppleganger
   assign("PRIORITIES_TYPE", input$priorityType, envir = .GlobalEnv)
   if (!is.numeric(input$better))
     return()
