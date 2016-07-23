@@ -2,6 +2,9 @@ library(openxlsx)
 library(googlesheets)
 source("common-fxs.R")
 source("set-globals.R")
+#A single global variable for determining doppleganger (i.e. should we use the
+#transpose).  This is toggled in server, checking the right place
+IS_DOPPLEGANGER = FALSE
 #Voter spreadsheets will be created initially
 Vote_Dataframes = list()
 All_Alts = list()
@@ -323,6 +326,20 @@ update_globals <- function(xlsxFile, type = "xlsx") {
 }
 
 priorities_wrapper = function(x) {
+  print(x)
+  if (IS_DOPPLEGANGER) {
+    if ("list" %in% class(x)) {
+      tx = list()
+      for(ax in x) {
+        tx[[length(tx)+1]]=t(ax)
+      }
+      x=tx
+    } else {
+      x=t(x)
+    }
+  }
+  print("After")
+  print(x)
   #print(PRIORITIES_TYPE)
   if (PRIORITIES_TYPE == "eigen") {
     return(eigen_largest(x))
