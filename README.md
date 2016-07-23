@@ -4,6 +4,6 @@
 
 This repository contains the following:
 
-* Source code to the *SimpleAHP* web application (written in R/Shiny) [avaiable in the R directory](R/)
-* Source code to the Jupyter/Python work done by Devin Tamayo [available in the Python directory](Python/)
+* Source code to the *SimpleAHP* web application (written in R/Shiny) [avaiable in the SimpleAHP directory](SimpleAHP/)
+* Source code to the DevaAHP toolkit (written in Jupyter/Python, work done by Devin Tamayo) [available in the DevAHP directory](DevAHP/)
 * Example paper questionnaires [available in the QuestionnaireSimplified directory](QuestionnaireSimplified/)
