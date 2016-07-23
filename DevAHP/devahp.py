@@ -40,16 +40,16 @@ def calc(x, better = 3.0, muchbetter = 9.0):
     else:
         return("Error, unknown value "+ x)
 
-def single_stats(fname, sheetname, bars = False, better = 3,  muchbetter = 9):
+def single_stats(fname, sheetname, bars = False, better = 3,  muchbetter = 9, doppelganger = False):
     if bars:
-        eigen = single_stats(fname, sheetname, bars = False, better = better, muchbetter = muchbetter)
+        eigen = single_stats(fname, sheetname, bars = False, better = better, muchbetter = muchbetter, doppelganger = doppelganger)
         altnames = get_altnames("Areas.xlsx")
         data = go.Bar(x=altnames, y=eigen)
         layout = go.Layout(title = sheetname+"'s Priorities")
         return iplot(go.Figure(data = go.Data([data]), layout = layout))
 
     else:
-        return Largest_eigen(getMatrix(fname, sheetname, better, muchbetter))
+        return Largest_eigen(getMatrix(fname, sheetname, better, muchbetter, doppelganger))
 
 def group_stats(xlsxFname, listOfSheetnames, bars = False):
     if bars:
@@ -93,18 +93,7 @@ def get_altnames(xlsxfile):
                 rval.append(thirdcol[row])
     return rval
     
-def listtest(x):   
-    list1 = list([1, 2, 5, 6, 9])
-    if x not in list1:
-        return "number not found"
-    else:
-        return "number was found"
-
-
-#print get_altnames('Areas.xlsx')
-#print listtest(6)
-
-def getMatrix(fname, sheetName, better = 3, muchbetter = 9):
+def getMatrix(fname, sheetName, better = 3, muchbetter = 9, doppelganger = False):
     #First we need to know the alternatives in this sheet
     altnames = get_altnames(fname)
     #The number of alternatives is the size of the return matrix
@@ -136,6 +125,9 @@ def getMatrix(fname, sheetName, better = 3, muchbetter = 9):
             returnMatrix[rowIndex,colIndex] = voteValue
             returnMatrix[colIndex, rowIndex] = 1./voteValue
 #            returnMatrix[index3, index1] = 
+    if doppelganger:
+        returnMatrix = np.transpose(returnMatrix)
+        
     return returnMatrix
 
 
