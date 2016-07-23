@@ -43,7 +43,7 @@ def calc(x, better = 3.0, muchbetter = 9.0):
 def single_stats(fname, sheetname, bars = False, better = 3,  muchbetter = 9, doppelganger = False):
     if bars:
         eigen = single_stats(fname, sheetname, bars = False, better = better, muchbetter = muchbetter, doppelganger = doppelganger)
-        altnames = get_altnames("Areas.xlsx")
+        altnames = get_altnames(fname)
         data = go.Bar(x=altnames, y=eigen)
         layout = go.Layout(title = sheetname+"'s Priorities")
         return iplot(go.Figure(data = go.Data([data]), layout = layout))
@@ -51,15 +51,20 @@ def single_stats(fname, sheetname, bars = False, better = 3,  muchbetter = 9, do
     else:
         return Largest_eigen(getMatrix(fname, sheetname, better, muchbetter, doppelganger))
 
-def group_stats(xlsxFname, listOfSheetnames, bars = False):
+def group_stats(xlsxFname, listOfSheetnames = None, bars = False, better = 3,  muchbetter = 9, doppelganger = False):
+    if listOfSheetnames is None:
+        listOfSheetnames = get_sheetnames(xlsxFname)
     if bars:
-        barVals = group_stats(xlsxFname, listOfSheetnames, bars = False)
+        eigen = group_stats(xlsxFname, listOfSheetnames, bars = False, better = better,  muchbetter = muchbetter, doppelganger = doppelganger)
+        altnames = get_altnames(xlsxFname)
+        data = go.Bar(x=altnames, y=eigen)
+        layout = go.Layout(title = "Group Priorities")
         # Do nifty stuff like in tutorial to create plotly chart
-        return "I should do bars, but I haven't yet"
+        return iplot(go.Figure(data = go.Data([data]), layout = layout))
     else:
         listOfMatrices = []
         for sheetName in listOfSheetnames:
-            theMatrix = getMatrix(xlsxFname, sheetName)
+            theMatrix = getMatrix(xlsxFname, sheetName, better = better,  muchbetter = muchbetter, doppelganger = doppelganger)
             listOfMatrices.append(theMatrix)
         geomAvg = geometric_avg(listOfMatrices)
         return Largest_eigen(geomAvg)
@@ -157,3 +162,12 @@ def geometric_avg(listOfMats):
     return rval
 print(group_stats('Areas.xlsx', ['Sarah', 'Drew']))  
 #print getMatrix('Areas.xlsx', 'Sarah')
+
+def get_sheetnames(xlsxFname):
+    wb = load_workbook(filename = xlsxFname)
+    return wb.get_sheet_names()
+
+
+
+
+
