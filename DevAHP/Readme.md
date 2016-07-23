@@ -1,13 +1,17 @@
-## Python AHP Library
-This is the beginnings of a python library to do AHP related calculations.  Currently it is limited to
+## DevAHP toolkit
+This is a Python / Jupyter toolkit for performing some standard AHP calculations in Python/Jupyter
 
-1. Converting pairwise comparisons to priorities.
-2. It can use the Better/Much Better scale.
-3. It reads inputs from specially setup Excel files.
+### Currently supported calculations
+1. Reading in group pairwise comparisons from an Excel file using the better/much better scale
+2. Calculating individual priorities where you can:
+  1. Change the meaning of better/much better
+  2. Flip the doppelganger flag and see the doppelganger priorities
+  3. See either the priority values, or immediately see the priority graph in Jupyter
+3. Calculating group priorities where you can:
+  1. Change the meaning of better/much better
+  2. Flip the doppelganger flag and see the doppelganger priorities
+  3. See either the priority values, or immediately see the priority graph in Jupyter
+  4. By default it calculates the whole group, but you can choose to synthesize a subset as well
 
-## Next steps
-- [x] Create this page
-- [ ] Read in the alternative names from the spreadsheet of data.
-- [ ] Handle calculating the geometric average matrix for a group of participants
-- [ ] Handle calculating the priorities then for a group of participants.
-- [ ] Think about how to make a video showing someone how to get started using your library.
+### Quickstart
+There is a quickstart guide available at [docs/Quickstart.pdf](docs/Quickstart.pdf)
