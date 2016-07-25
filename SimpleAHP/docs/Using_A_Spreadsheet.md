@@ -5,6 +5,8 @@ The *SimpleAHP* web application can load data from a spreadsheet and present the
 
 No matter which of the two options you choose, the way data needs to be put into the the spreadsheet is identical.
 
+**NOTE:** If you want to use a google form online questionnaire, please see [QuickstartGoogleForms.md](QuickstartGoogleForms.md).
+
 ## 1. Spreadsheet structure
 The rules for the spreadsheet structure are fairly straightforward
 
