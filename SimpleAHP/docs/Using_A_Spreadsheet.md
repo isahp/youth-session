@@ -5,7 +5,7 @@ The *SimpleAHP* web application can load data from a spreadsheet and present the
 
 No matter which of the two options you choose, the way data needs to be put into the the spreadsheet is identical.
 
-## Spreadsheet structure
+## 1. Spreadsheet structure
 The rules for the spreadsheet structure are fairly straightforward
 
 1. Each voter gets their own sheet within the spreadsheet, the name of the sheet is the name of the user
@@ -18,7 +18,7 @@ The rules for the spreadsheet structure are fairly straightforward
   4. You can mix EBB votes and 1-9 votes in the same spreadsheet
   5. You can even mix EBB and 1-9 votes in a single participant's sheet!
 
-### Format of a single voter's sheet
+### 1.1 Format of a single voter's sheet
 The layout for the sheet of a single voter's values follows a three column format.
 
 1. The first column is the name of the **First Alternative** being compared
@@ -27,5 +27,22 @@ The layout for the sheet of a single voter's values follows a three column forma
 
 In other words the structure of a row is like a sentence ``A *is much better* than B''
 
-### Legal pairwise vote values
+### 1.2 Legal pairwise vote values
+The following are legal values for the second column (the vote value column)
 
+* **<** Means the first alternative is better.  Think of it like &#x2190; pointing towards the dominant choice.  For example
+
+  | A        | B |   C     |
+  |----------|---|---------|
+  |Chocolate | < | Vanilla |  
+  Is a vote of *Chocolate is better than Vanilla*
+  
+* **<<** Means the first alternative is much better.  Think of it like a double &#x2190;, pointing towards the dominant choice.
+
+  | A        | B |   C     |
+  |----------|---|---------|
+  |Chocolate | << | Vanilla |  
+  Is a vote of *Chocolate is* **much** *better than Vanilla*
+  
+
+* **>** Means the second
