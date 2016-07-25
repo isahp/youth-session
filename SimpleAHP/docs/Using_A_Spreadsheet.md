@@ -107,5 +107,5 @@ Although you can load a google spreadsheet directly from SimpleAHP, it is nice t
 ## 3. Example spreadsheets
 We have an example with and without demographic information.  They are available at:
 
-* [Example XLSX file without demographics](../../QuestionnaireSimplified/ExampleExcel.xlsx)
-* [Example XLSX file with demographics](../../QuestionnaireSimplified/ExampleWithDemographics.xlsx)
+* [Example XLSX file without demographics](https://github.com/isahp/youth-session/raw/master/QuestionnaireSimplified/ExampleExcel.xlsx)
+* [Example XLSX file with demographics](https://github.com/isahp/youth-session/raw/master/QuestionnaireSimplified/ExampleWithDemographics.xlsx)
