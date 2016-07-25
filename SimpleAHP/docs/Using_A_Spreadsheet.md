@@ -56,7 +56,7 @@ The following are legal values for the second column (the vote value column)
 
   | A        | B |   C     |
   |----------|---|---------|
-  |Chocolate | > | Vanilla |  
+  |Chocolate | >> | Vanilla |  
   Is a vote of *Vanilla is* **much** *better than Chocolate*
 
 * **(NUMBER)** Any vote may be a simple number, in any of the following formats
