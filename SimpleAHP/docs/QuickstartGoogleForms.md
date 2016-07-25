@@ -7,6 +7,8 @@ from google forms and produce individual, group, and subgroup priorities.
 In either case you can see an example of the results of using this process at
 <a href="http://bit.ly/music-choice-example-results">Music Preference Example</a>.
 
+**NOTE:** If you want to use a paper questionnaire and fill out a google / Excel spreadsheet instead, please see [Using A Spreadsheet](Using_A_Spreadsheet.md)
+
 <h3><a id="outline" class="anchor" href="#outline" aria-hidden="true">
 <span aria-hidden="true" class="octicon octicon-link"></span></a>
 Outline of Quickstart Document
