@@ -59,3 +59,47 @@ The following are legal values for the second column (the vote value column)
   |Chocolate | > | Vanilla |  
   Is a vote of *Vanilla is* **much** *better than Chocolate*
 
+* **(NUMBER)** Any vote may be a simple number, in any of the following formats
+  * A number 1,2,3,4,5,6,7,9
+  * A decimal vote, e.g. 2.37168
+  * A reciprocal vote, e.g. 1/8
+  * An example follows
+
+  | A   | B  |  C  |
+  |-----|----|-----|
+  |Chocolate| 8 |  Vanilla|
+  |Chocolate | 1/3 | Strawberry|
+  
+  Are numerical votes meaning *Chocolate is 8 times better than Vanilla* and *Chocolate is 1/3 as good as Strawberry*, or in other words *Strawberry is 3 times better than Chocolate*
+  
+## 1.3 The demographic information
+Demographic information should appear in a sheet called **info**.  It take the following form:
+  * Each row is the full demographic information for a user.
+  * The columns are the demographic information, the first column is the user naem
+  * The user name **must** match the name of a sheet in the spreadsheet (the sheet for that user's votes)
+  * The first row tells the names of the demographic columns (the A1 cell should be left blank)
+  * The demographic information is treated as purely categorical (i.e. if the demographic was age, and people inputed 16, 25, 30, 33, 18, 19 you could not see 18-24 year olds ... to do that, you need to have an 18-24 option and have that as the value).
+  * Below is an example demographic sheet
+
+  |     |Age	|Gender	|Fav Color|
+  |-----|----|-------|---------|
+  |Bill |40-50 |M |blue|
+  |Elena |20-30 |F |red|
+  |Rozann |60+ |F |green|
+  |Dan |40-50 | M |purple|
+  |John |40-50| M |green|
+
+## 2. Direct linking to immediately load a Google Spreadsheet
+
+Although you can load a google spreadsheet directly from SimpleAHP, it is nice to have a single URL that will load your data and immediately present you with results.  This is how all of the links like http://tiny.cc/youthAHPOut1 have been made.
+
+**WARNING:** This method does not work with the tiny.cc/SimpleAHP URL, you have to know the full URL for the SimpleAHP web server.  If you install your own SimpleAHP, this method *will* work on that server as well.
+
+1. Go to your google spreadsheet and choose the File &#x2192; Publish to the web
+2. Copy that URL, let's call the value of that URL **MY_SHEET_URL**
+3. The url to load your sheet will be:  
+
+  ```
+  http://ec2-52-37-195-69.us-west-2.compute.amazonaws.com/pairwise-app/?gsheetUrl=MY_SHEET_URL
+  ```
+4. As an added bonus you can go to http://tiny.cc and create a tiny URL that points to your above address so it is easier to share with others!
