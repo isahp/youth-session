@@ -22,4 +22,10 @@ The rules for the spreadsheet structure are fairly straightforward
 The layout for the sheet of a single voter's values follows a three column format.
 
 1. The first column is the name of the **First Alternative** being compared
-2. The second column is the vote value
+2. The second column is the vote value (see [Legal pairwise vote values](#legal-pairwise-vote-values) for details)
+3. The third column is the name of the **Second Alternative** being compared.
+
+In other words the structure of a row is like a sentence ``A *is much better* than B''
+
+### Legal pairwise vote values
+
