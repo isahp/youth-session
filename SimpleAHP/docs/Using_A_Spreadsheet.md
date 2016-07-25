@@ -30,14 +30,14 @@ In other words the structure of a row is like a sentence ``A *is much better* th
 ### 1.2 Legal pairwise vote values
 The following are legal values for the second column (the vote value column)
 
-* **<** Means the first alternative is better.  Think of it like &#x2190; pointing towards the dominant choice.  For example
+* **(<)** Means the first alternative is better.  Think of it like &#x2190; pointing towards the dominant choice.  For example
 
   | A        | B |   C     |
   |----------|---|---------|
   |Chocolate | < | Vanilla |  
   Is a vote of *Chocolate is better than Vanilla*
   
-* **<<** Means the first alternative is much better.  Think of it like a double &#x2190;, pointing towards the dominant choice.
+* **(<<)** Means the first alternative is much better.  Think of it like a double &#x2190;, pointing towards the dominant choice.
 
   | A        | B |   C     |
   |----------|---|---------|
@@ -45,4 +45,17 @@ The following are legal values for the second column (the vote value column)
   Is a vote of *Chocolate is* **much** *better than Vanilla*
   
 
-* **>** Means the second
+* **(>)** Means the second alternative is better.  Think of it like &#x2192; pointing towards the dominant choice, for example
+
+  | A        | B |   C     |
+  |----------|---|---------|
+  |Chocolate | > | Vanilla |  
+  Is a vote of *Vanilla is better than Chocolate*
+
+* **(>>)** Means the second alternative is much better.  Think of it like &#x2192; pointing towards the dominant choice, for example
+
+  | A        | B |   C     |
+  |----------|---|---------|
+  |Chocolate | > | Vanilla |  
+  Is a vote of *Vanilla is* **much** *better than Chocolate*
+
