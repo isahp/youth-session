@@ -103,3 +103,9 @@ Although you can load a google spreadsheet directly from SimpleAHP, it is nice t
   http://ec2-52-37-195-69.us-west-2.compute.amazonaws.com/pairwise-app/?gsheetUrl=MY_SHEET_URL
   ```
 4. As an added bonus you can go to http://tiny.cc and create a tiny URL that points to your above address so it is easier to share with others!
+
+## 3. Example spreadsheets
+We have an example with and without demographic information.  They are available at:
+
+* [Example XLSX file without demographics](../../QuestionnaireSimplified/ExampleExcel.xlsx)
+* [Example XLSX file with demographics](../../QuestionnaireSimplified/ExampleWithDemographics.xlsx)
