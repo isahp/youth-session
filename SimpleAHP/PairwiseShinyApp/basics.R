@@ -16,17 +16,32 @@ Group_Pairwises = list()
 Overall_Priorities = list()
 ERROR_MSGS_PARSE = list()
 #The Voting Table
-Voting_Symbolic_String_Values = c(">>" = Symbolic_Much_Better_Value_Opposite, 
-                         ">"= Symbolic_Better_Value_Opposite, 
-                         "E"=Symbolic_Equals_Value, 
-                         "e"=Symbolic_Equals_Value, 
-                         "<"=Symbolic_Better_Value, 
-                         "<<"=Symbolic_Much_Better_Value)
-Voting_String_Values = c(">>" = Much_Better_Value, 
-                                  ">"= Better_Value,
-                                  "E"=1, "e"=1,
-                                  "<"=1./Better_Value,
-                                  "<<"=1./Much_Better_Value)
+Voting_Symbolic_String_Values = c(
+  ">>" = Symbolic_Much_Better_Value_Opposite, 
+  "--" = Symbolic_Much_Better_Value_Opposite, 
+  ">"= Symbolic_Better_Value_Opposite, 
+  "-"= Symbolic_Better_Value_Opposite, 
+  "<"=Symbolic_Better_Value, 
+  "+"=Symbolic_Better_Value, 
+  "<<"=Symbolic_Much_Better_Value,
+  "++"=Symbolic_Much_Better_Value,
+  "="=Symbolic_Equals_Value, 
+  "E"=Symbolic_Equals_Value, 
+  "e"=Symbolic_Equals_Value
+)
+Voting_String_Values = c(
+  ">>"=1./Much_Better_Value,
+  "--"=1./Much_Better_Value,
+  ">"=1./Better_Value,
+  "-"=1./Better_Value,
+  "<<" = Much_Better_Value, 
+  "++" = Much_Better_Value, 
+  "<"= Better_Value,
+  "+"= Better_Value,
+  "="=1, 
+  "E"=1, 
+  "e"=1
+)
 ################################################
 ####Start defining some useful functions.    ###
 ################################################
