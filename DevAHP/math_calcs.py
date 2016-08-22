@@ -6,6 +6,12 @@ Created on Aug 21, 2016
 import numpy as np
 
 def close_enough(nextVal, currentVal, error = 1e-7):
+    '''
+    Are matrices class enough to consider them essentially equal
+    :param nextVal:
+    :param currentVal:
+    :param error:
+    '''
     diff = nextVal - currentVal
     diff = abs(diff)
     maxdiff = max(diff)

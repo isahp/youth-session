@@ -8,6 +8,7 @@ import numpy as np
 import plotly.graph_objs as go
 from plotly.offline import download_plotlyjs, init_notebook_mode, iplot
 from math_calcs import largest_eigen
+from math import floor
 
 def add_place(np_array):
     if np_array.shape == (0, 0):
@@ -22,6 +23,7 @@ def add_place(np_array):
         return(np_array)
 
 
+
 class PairwiseAllUsers(object):
     '''
     This represents all user votes on a particular pairwise comparison
@@ -34,6 +36,7 @@ class PairwiseAllUsers(object):
         self.user_votes = []
         self.user_names = []
         self.alt_names = []
+        self.sym_vote_values = [3, 9]
         
     def clear(self):
         self.user_votes = []
@@ -80,20 +83,72 @@ class PairwiseAllUsers(object):
         else:
             votes[col, row] = 0.0
         
-    def get_matrix(self, user):
+    def get_matrix_raw(self, user):
         if isinstance(user, str):
             #Need to get user position
             user = self.user_names.index(user)
-        return(self.user_votes[user])
+        rval = self.user_votes[user].copy()
+        return(rval)
+    
+    def get_sym_vote_value(self, vote, sym_vote_values = None):
+        if sym_vote_values is None:
+            sym_vote_values = self.sym_vote_values
+        if floor(vote) == vote:
+            intVote = abs(int(vote)) - 1
+            if intVote < len(sym_vote_values):
+                #Okay the vote is within the list of sym values
+                return(sym_vote_values[intVote])
+            else:
+                #Past the end, we just assume a continued exponential growth from the last value
+                #where the base is (last_value)^(1/length)
+                base = sym_vote_values[len(sym_vote_values)-1] ** (1.0/len(sym_vote_values))
+                diff = intVote - len(sym_vote_values) + 1
+                return(base ** diff)
+        else:
+            intVote = int(vote+0.5)
+            return(1.0/self.get_sym_vote_value(intVote, sym_vote_values=sym_vote_values))
         
-    def single_stats(self, user_name, bars = False, better = 3,  muchbetter = 9, doppelganger = False):
+    def get_vote_value(self, vote, sym_vote_values = None):
+        if vote >= 0:
+            return(vote)
+        else:
+            return(self.get_sym_vote_value(vote, sym_vote_values))
+            
+    def get_matrix(self, user, sym_vote_values = None, doppelganger = False):
+        if isinstance(user, str):
+            #Need to get user position
+            user = self.user_names.index(user)
+        rval = self.user_votes[user].copy()
+        for row in range(rval.shape[0]):
+            for col in range(rval.shape[1]):
+                data = rval[row, col]
+                rval[row, col] = self.get_vote_value(data, sym_vote_values=sym_vote_values)
+        if doppelganger:
+            return(np.transpose(rval))
+        else:
+            return(rval)
+        
+    def single_stats(self, user_name, bars = False, sym_vote_values = None, doppelganger = False):
         if bars:
-            eigen = self.single_stats(user_name, bars = False, better = better, muchbetter = muchbetter, doppelganger = doppelganger)
+            eigen = self.single_stats(user_name, bars = False, sym_vote_values = sym_vote_values, doppelganger = doppelganger)
             data = go.Bar(x=self.alt_names, y=eigen)
             layout = go.Layout(title = user_name+"'s Priorities")
             return iplot(go.Figure(data = go.Data([data]), layout = layout))
     
         else:
-            return largest_eigen(self.get_matrix(user_name))
+            return largest_eigen(self.get_matrix(user_name, sym_vote_values = sym_vote_values, doppelganger=doppelganger))
+        
+a = PairwiseAllUsers()
 
+def inv_vote(vote):
+    if vote < 0:
+        if floor(vote) == vote:
+            return vote - 0.5
+        else:
+            return vote + 0.5
+    else:
+        if vote == 0.0:
+            return 0.0
+        else:
+            return 1.0/vote
 

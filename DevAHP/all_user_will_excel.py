@@ -5,7 +5,7 @@ Created on Aug 20, 2016
 '''
 from openpyxl import load_workbook
 import numpy as np
-from all_user_votes import PairwiseAllUsers
+from all_user_votes import PairwiseAllUsers, inv_vote
 
 ################################################################
 ####Begin code to parse Will's Excel File Format  ##############
@@ -32,21 +32,21 @@ def get_usernames_will_excel(xlsxFile):
     wb = load_workbook(filename = xlsxFile)
     return wb.get_sheet_names()
     
-def calc(x, better = 3.0, muchbetter = 9.0):
+def calc(x):
     if(x == ">"):
-        return 1./better
+        return -1.5
     elif(x == ">>"):
-        return 1./muchbetter
+        return -2.5
     elif(x == "<"):
-        return better
+        return -1
     elif(x == "<<"):
-        return muchbetter
+        return -2
     elif(x == "E"):
         return 1
     else:
         return("Error, unknown value "+ x)
     
-def get_matrix_from_will(fname, sheetName, better = 3, muchbetter = 9, doppelganger = False):
+def get_matrix_from_will(fname, sheetName):
     #First we need to know the alternatives in this sheet
     altnames = get_altnames_will_excel(fname)
     #The number of alternatives is the size of the return matrix
@@ -72,23 +72,20 @@ def get_matrix_from_will(fname, sheetName, better = 3, muchbetter = 9, doppelgan
             rowIndex = altnames.index(val1)
             colIndex = altnames.index(val3)
             #Get the numeric value of the vote from the stringy vote
-            voteValue = calc(val2, better, muchbetter)
+            voteValue = calc(val2)
             #Lastly place the vote in, and it's reciprocal on the other side
             #of the diagonal
             returnMatrix[rowIndex,colIndex] = voteValue
-            returnMatrix[colIndex, rowIndex] = 1./voteValue
+            returnMatrix[colIndex, rowIndex] = inv_vote(voteValue)
 #            returnMatrix[index3, index1] = 
-    if doppelganger:
-        returnMatrix = np.transpose(returnMatrix)
-        
     return returnMatrix
 
-def from_will_excel(xlsxFile, better = 3.0, muchbetter = 9.0, doppelganger = False):
+def from_will_excel(xlsxFile):
     allvotes = PairwiseAllUsers()
     allvotes.clear()
     allvotes.alt_names = get_altnames_will_excel(xlsxFile)
     for user in get_usernames_will_excel(xlsxFile):
-        allvotes.add_user(user, get_matrix_from_will(xlsxFile, user, better, muchbetter, doppelganger))
+        allvotes.add_user(user, get_matrix_from_will(xlsxFile, user))
     return(allvotes)
 ################################################################
 #### End code to parse Will's Excel File Format ################
@@ -96,13 +93,10 @@ def from_will_excel(xlsxFile, better = 3.0, muchbetter = 9.0, doppelganger = Fal
 
 
 
-votes = PairwiseAllUsers()
-print(isinstance("Fart", str))
-votes.add_user("Bill")
-votes.add_alt("alt1")
-votes.add_alt("alt2")
-votes.pw("Bill", 0, 1, 5)
-votes.add_user("John")
-print(votes)
 votes2 = from_will_excel("Areas.xlsx")
-print(votes2)
+print(votes2.get_matrix_raw("Sarah"))
+print(votes2.get_matrix("Sarah"))
+print(votes2.single_stats("Sarah"))
+print(votes2.single_stats("Sarah", doppelganger=True))
+print(votes2.get_matrix("Sarah", sym_vote_values = [2, 3]))
+print(votes2.single_stats("Sarah", sym_vote_values = [2, 3]))
