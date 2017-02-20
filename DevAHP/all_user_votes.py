@@ -7,7 +7,7 @@ Created on Aug 19, 2016
 import numpy as np
 import plotly.graph_objs as go
 from plotly.offline import download_plotlyjs, init_notebook_mode, iplot
-from math_calcs import largest_eigen
+from math_calcs import largest_eigen, random_consistency
 from math import floor
 
 def add_place(np_array):
@@ -22,6 +22,24 @@ def add_place(np_array):
         np_array = np.insert(np_array, [size], extra_row, axis = 0)
         return(np_array)
 
+def geometric_avg(listOfMats):
+    #Create rval
+    rval = np.zeros_like(listOfMats[0])
+    nrows = rval.shape[0]
+    ncols = rval.shape[1]
+    for row in range(nrows):
+        for col in range(ncols):
+            val = 1
+            count = 0
+            for mat in listOfMats:
+                if mat[row, col]!=0:
+                    val *= mat[row,col]
+                    count+=1
+            if count != 0:
+                val = pow(val, 1.0/count)
+            #Finally have the value, put it in
+            rval[row,col] = val
+    return rval
 
 
 class PairwiseAllUsers(object):
@@ -37,6 +55,7 @@ class PairwiseAllUsers(object):
         self.user_names = []
         self.alt_names = []
         self.sym_vote_values = [3, 9]
+        self.default_votes = None
         
     def clear(self):
         self.user_votes = []
@@ -138,6 +157,21 @@ class PairwiseAllUsers(object):
         else:
             return largest_eigen(self.get_matrix(user_name, sym_vote_values = sym_vote_values, doppelganger=doppelganger))
         
+    def group_stats(self, user_names, bars = False, sym_vote_values = None, doppelganger = False):
+        if bars:
+            pass
+        else:
+            all_matrices = [self.get_matrix(user_name, sym_vote_values=sym_vote_values, doppelganger=doppelganger)
+                            for user_name in user_names]
+            geomAvg = geometric_avg(all_matrices)
+            return largest_eigen(geomAvg)
+        
+    def inconsistency(self, user_name, sym_vote_values = None):
+        mat = self.get_matrix(user_name, sym_vote_values)
+        eigen = largest_eigen(mat, value_only = True)
+        size = mat.shape[0]
+        return (eigen-size)/(random_consistency(size)*(size-1))
+    
 a = PairwiseAllUsers()
 
 def inv_vote(vote):
