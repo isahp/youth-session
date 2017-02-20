@@ -8,3 +8,4 @@
 .*.swp
 Python/.idea
 __pycache__
+.~lock.*
